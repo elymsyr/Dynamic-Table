@@ -29,6 +29,8 @@ public class dynamicTable074 : Agent
     private Transform[] activeArray;
     private Rigidbody productRigidbody;
     List<Tuple<int, int>> specifiedPoints;
+    private bool onTarget = false;
+    private productCollision074 productClass;
 
     void Awake()
     {
@@ -64,7 +66,7 @@ public class dynamicTable074 : Agent
         rows = table.rows;
         columns = table.columns;
         wallBorders = table.getBorders;
-        productCollision074 productClass = product.GetComponent<productCollision074>();
+        productClass = product.GetComponent<productCollision074>();
         productClass.InitializeProduct(table.wallsArray[0],table.wallsArray[1],table.wallsArray[2],table.wallsArray[3],target,gameObject);
         boxesLoc = new Vector3[rows,columns];     
         for(int i=0; i<rows;i++){
@@ -78,7 +80,7 @@ public class dynamicTable074 : Agent
     {
         int index = 0;
         int movingPartsIndex = 0;
-
+        onTarget = productClass.triggered;
         GetActiveArray();
 
         foreach (Transform child in boxesArray)
@@ -105,10 +107,11 @@ public class dynamicTable074 : Agent
         }
         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
         if(directionPoint<0.3&&directionPoint>0){directionPoint*=-1;}
-        var heightPoint = Math.Abs(product.transform.localPosition.y-7.21f) + 0.000001f;
-        float reward = 0.0001f * (directionPoint*productRigidbody.velocity.magnitude*productRigidbody.velocity.magnitude)*(1f/(heightPoint*targetCloseness()));
-        AddReward(reward);
-
+        var heightPoint = Math.Abs(product.transform.localPosition.y-6.8f);
+        if (!onTarget){
+            float reward = 0.0001f * ((directionPoint*productRigidbody.velocity.magnitude)+0.00001f)*(1f/((heightPoint*targetCloseness())+0.0001f));
+            AddReward(reward);            
+        }
         if (showUI)
         {
             updateUI();
@@ -152,7 +155,15 @@ public class dynamicTable074 : Agent
         win++;
         AddReward(2f);
         EndEpisode();
-    } 
+    }
+
+    // public void StayReward(){
+    //     AddReward(0.01f);
+    //     if (GetCumulativeReward()>15f){
+    //         win++;
+    //         EndEpisode();
+    //     }        
+    // }
 
     public override void CollectObservations(VectorSensor sensor)
     {

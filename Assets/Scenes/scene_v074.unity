@@ -195,9 +195,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_Model: {fileID: 5022602860645237092, guid: 5c4be9604035033408c564ccbfc1aa89, type: 3}
+  m_InferenceDevice: 1
+  m_BehaviorType: 2
   m_BehaviorName: Dynamic Table
   TeamId: 0
   m_UseChildSensors: 1
@@ -242,7 +242,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 600
+  MaxStep: 400
   showUI: 1
   randomTableSize: 0
   text: {fileID: 1482516762}
@@ -394,6 +394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7094a9ddfb542946bf5e3272bbfb3d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggered: 0
 --- !u!1 &666189075
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,6 +428,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1482516765}
+  - {fileID: 1053652524}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 45.253, y: -38.289, z: -19.637}
   m_AnchorMin: {x: 0, y: 0}
@@ -644,12 +646,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1053652523}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.270155, y: -36.711243, z: 19.099632}
-  m_LocalScale: {x: 1.259361, y: 1, z: 0.98679954}
+  m_LocalRotation: {x: -0.40974173, y: 0.23629636, z: 0.024375346, w: 0.88072795}
+  m_LocalPosition: {x: 1078.8966, y: 610.3338, z: -80.632126}
+  m_LocalScale: {x: 3.0667136, y: 1.8454686, z: 2.0774872}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2068911107}
+  m_Father: {fileID: 666189076}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1053652525
 MeshCollider:
@@ -1220,7 +1222,6 @@ Transform:
   m_Children:
   - {fileID: 554677990}
   - {fileID: 1736583744}
-  - {fileID: 1053652524}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807

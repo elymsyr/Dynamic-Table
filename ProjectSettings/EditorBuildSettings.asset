@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/scene_b074_size7.unity
     guid: 815c91febaa34f34da0622545cd93a4a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/scene_b074_size8.unity
     guid: 10318322c6723aa40ab54e887be39ef4
+  - enabled: 1
+    path: Assets/Scenes/scene_b074_OnStay.unity
+    guid: 71412a35c88cbce45bf3c289ec85b135
   m_configObjects: {}
