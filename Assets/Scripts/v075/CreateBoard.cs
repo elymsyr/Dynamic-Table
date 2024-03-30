@@ -223,13 +223,6 @@ public class CreateBoard075 : MonoBehaviour
         target.SendMessage("GetBorders");
     }
 
-    // public int ChangeShape(){
-    //     mFilter = product.GetComponent<MeshFilter>();
-    //     int meshIndex = Random.Range(0, mMeshes.Length);
-    //     mFilter.mesh = mMeshes[meshIndex];
-    //     return meshIndex;
-    // }
-
     private Vector3 randomPos(){
         return new Vector3(Random.Range(wallBorders[0]-(scale/2)-0.5f, wallBorders[1]+(scale/2)+0.5f), Random.Range(6.5f,9.8f), Random.Range(wallBorders[2]-(scale/2)-0.5f, wallBorders[3]+(scale/2)+0.5f));
     }    

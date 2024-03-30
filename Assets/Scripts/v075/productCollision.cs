@@ -3,7 +3,6 @@ using UnityEngine;
 public class productCollision075 : MonoBehaviour
 {
     private GameObject[] walls;
-    // private rayRotation rays;
     private GameObject target;
     private GameObject receiverObject;
     public bool triggered = false;
@@ -12,9 +11,6 @@ public class productCollision075 : MonoBehaviour
         walls = setWalls;
         target = setTarget;
         receiverObject = receiver;
-        // rays = transform.GetChild(0).GetComponent<rayRotation>();
-        // Debug.Log(rays.name);
-        // rays.SendMessage("GetInfos");
     } 
 
     private void OnTriggerEnter(Collider other)
@@ -31,11 +27,6 @@ public class productCollision075 : MonoBehaviour
             }
         }
     }
-    // private void OnTriggerStay(Collider other){
-    //     if(other.gameObject == target){
-    //         receiverObject.SendMessage("StayReward");
-    //     }
-    // }
 
     private void OnTriggerExit(Collider other){
         if(other.gameObject == target){

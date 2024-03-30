@@ -186,7 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 52
+    VectorObservationSize: 62
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -1096,7 +1096,7 @@ MonoBehaviour:
   m_RaysPerDirection: 5
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
-  m_RayLength: 10
+  m_RayLength: 5
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -1117,7 +1117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac4f4bce5b1dcd54685c7aa63323cc9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  observation: []
 --- !u!33 &1547414875
 MeshFilter:
   m_ObjectHideFlags: 0

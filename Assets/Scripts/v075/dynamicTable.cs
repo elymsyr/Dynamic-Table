@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents.Policies;
+using Unity.Barracuda;
 
 public class dynamicTable075 : Agent
 {
@@ -15,7 +16,6 @@ public class dynamicTable075 : Agent
     [SerializeField] private GameObject text;
     private TextMeshPro ui;
     private float directionPoint = 0;
-    // public Vector3 direction;
     public Vector3 oldLocation = new Vector3(0f,0f,0f);
     Vector3 newLocation = new Vector3(0f,0f,0f);
     private int win = 0;
@@ -34,16 +34,22 @@ public class dynamicTable075 : Agent
     private List<Tuple<int, int>> specifiedPoints;
     private bool onTarget = false;
     private productCollision075 productClass;
+    private rayRotation rayComp;
+    private List<float> observation;
+    private RayPerceptionOutput.RayOutput[] rayOutputs;
+    private RayPerceptionSensorComponent3D rayPerceptionSensor;
+
 
     void Awake()
     {
+        observation = new List<float>(10);
         if (MaxStep<1){
             MaxStep = 600;
         }
         if (size == 7){ // 45 Observation 37 Actions
             specifiedPoints = new List<Tuple<int, int>>(){new Tuple<int, int>(0, 0),new Tuple<int, int>(0, 1),new Tuple<int, int>(1, 0),new Tuple<int, int>(0, 5),new Tuple<int, int>(0, 6),new Tuple<int, int>(1, 6),new Tuple<int, int>(5, 0),new Tuple<int, int>(6, 0),new Tuple<int, int>(6, 1),new Tuple<int, int>(6, 5),new Tuple<int, int>(6, 6),new Tuple<int, int>(5, 6)};
         }
-        else{ // 52 Observation 44 Actions
+        else{ // 52 Observation 55 Actions
             specifiedPoints = new List<Tuple<int, int>>(){new Tuple<int, int>(0, 0),new Tuple<int, int>(0, 1),new Tuple<int, int>(1, 0),new Tuple<int, int>(2, 0),new Tuple<int, int>(0, 2),new Tuple<int, int>(0, 5),new Tuple<int, int>(0, 6),new Tuple<int, int>(0, 7),new Tuple<int, int>(1, 7),new Tuple<int, int>(2, 7),new Tuple<int, int>(5, 0),new Tuple<int, int>(6, 0),new Tuple<int, int>(7, 0),new Tuple<int, int>(7, 1),new Tuple<int, int>(7, 2),new Tuple<int, int>(7, 5),new Tuple<int, int>(7, 6),new Tuple<int, int>(7, 7),new Tuple<int, int>(6, 7),new Tuple<int, int>(5, 7),};
         }
 
@@ -60,7 +66,10 @@ public class dynamicTable075 : Agent
         }
         table.CreateEnv();
         product = table.getProduct;
+        Transform ray = product.transform.GetChild(0);
+        rayPerceptionSensor = ray.GetComponent<RayPerceptionSensorComponent3D>();
         target = table.getTarget;
+
 
         if (product == null){Debug.Log("Product NULL");}
         if (target == null){Debug.Log("Target NULL");}
@@ -110,8 +119,6 @@ public class dynamicTable075 : Agent
             }
         }
         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
-        // direction = newLocation - oldLocation;
-        // direction.y = 0f;
         if(directionPoint<0.3&&directionPoint>0){directionPoint*=-1;}
         var heightPoint = Math.Abs(product.transform.localPosition.y-6.8f);
         if (!onTarget){
@@ -164,14 +171,6 @@ public class dynamicTable075 : Agent
         EndEpisode();
     }
 
-    // public void StayReward(){
-    //     AddReward(0.01f);
-    //     if (GetCumulativeReward()>15f){
-    //         win++;
-    //         EndEpisode();
-    //     }        
-    // }
-
     public override void CollectObservations(VectorSensor sensor)
     {
         foreach (Transform child in activeArray)
@@ -189,6 +188,21 @@ public class dynamicTable075 : Agent
         sensor.AddObservation(target.transform.localPosition);
         sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
+        RayCollect();
+        sensor.AddObservation(observation);
+    }
+
+    private void RayCollect(){
+        if (observation != null){
+            observation.Clear();
+        }
+        rayOutputs = RayPerceptionSensor.Perceive(rayPerceptionSensor.GetRayPerceptionInput()).RayOutputs;
+        for (int i = 0; i < rayOutputs.Length-1; i++)
+        {
+            var rayDirection = rayOutputs[i].EndPositionWorld - rayOutputs[i].StartPositionWorld;
+            float rayHitDistance = rayOutputs[i].HitFraction * rayDirection.magnitude;
+            observation.Add(rayHitDistance);
+        }
     }
 
     private void updateUI()
