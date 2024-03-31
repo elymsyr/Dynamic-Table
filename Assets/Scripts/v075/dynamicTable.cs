@@ -132,10 +132,15 @@ public class dynamicTable075 : Agent
         oldLocation = product.transform.localPosition;
     }
 
+
+
     public override void OnEpisodeBegin()
     {
         if(!randomTableSize){
-            table.ObjectPos();
+            if(CompletedEpisodes%50 == 0){
+                table.RecreateMaze();
+            }
+            table.ObjectPos(table.GetWallDist());     
         }
         else{
             table.ResetEnv();
@@ -161,7 +166,7 @@ public class dynamicTable075 : Agent
     }
     
     public void triggerReset(){
-        AddReward(-2f);
+        AddReward(-4f);
         EndEpisode();
     }
     

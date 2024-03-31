@@ -224,9 +224,14 @@ MonoBehaviour:
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
   wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
+  mazeMaterial: {fileID: 2100000, guid: 3458e0b93cad584458476b10a6973bea, type: 2}
   productPrefab: {fileID: 1853815523}
   targetPrefab: {fileID: 1213710263}
   wallsArray: []
+  maze: []
+  wallPrefab: {fileID: 0}
+  mazeWidth: 0
+  mazeHeight: 0
 --- !u!114 &124948874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,7 +247,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 500
+  MaxStep: 600
   showUI: 1
   randomTableSize: 0
   text: {fileID: 1124425823}
@@ -1096,7 +1101,7 @@ MonoBehaviour:
   m_RaysPerDirection: 5
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
-  m_RayLength: 5
+  m_RayLength: 4
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 8

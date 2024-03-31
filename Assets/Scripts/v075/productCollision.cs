@@ -20,11 +20,9 @@ public class productCollision075 : MonoBehaviour
             receiverObject.SendMessage("winReset");
             triggered = true;
         }
-        foreach(GameObject wall in walls){
-            if (other.gameObject == wall)
-            {
-                receiverObject.SendMessage("triggerReset");
-            }
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            receiverObject.SendMessage("triggerReset");
         }
     }
 

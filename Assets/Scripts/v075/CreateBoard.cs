@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CreateBoard075 : MonoBehaviour
@@ -15,6 +16,7 @@ public class CreateBoard075 : MonoBehaviour
     public Material boxMaterial;
     public Material coverMaterial;
     public Material wallMaterial;
+    public Material mazeMaterial;
     private GameObject pieces;
     private GameObject cover;
     private Transform[,] boxesArray;
@@ -32,12 +34,36 @@ public class CreateBoard075 : MonoBehaviour
 
     public float productScale => scale;
     public GameObject[] wallsArray; 
+    public List<GameObject> maze;
+    private GameObject master;
+    private int wallDistCheck = 0;
+
+    public float GetWallDist(){
+        GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
+        if (walls.Length == 0)
+        {
+            Debug.LogWarning("No walls found.");
+        }
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject wall in walls)
+        {
+            float distance = Vector3.Distance(transform.position, wall.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+            }
+        }
+        return closestDistance;
+    }    
 
     public void CreateEnv(){
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
-        LoadPrefabs();   
-        ObjectPos();
+        LoadPrefabs();
+        master = new GameObject("Maze");
+        CreateMaze();
+        ObjectPos(GetWallDist());
     }
 
     public void ResetEnv(){
@@ -47,11 +73,12 @@ public class CreateBoard075 : MonoBehaviour
         columns = new_size;
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
-        ObjectPos();
+        ObjectPos(GetWallDist());
+        RecreateMaze();
     }
 
     public void ResetEnvSimp(){
-        ObjectPos();
+        ObjectPos(GetWallDist());
     }
     
     public Vector3 CreateBoxes()
@@ -176,7 +203,7 @@ public class CreateBoard075 : MonoBehaviour
             wall.transform.localPosition = wallPosition;
             if (i > 1){wallBorders[i] = wall.transform.localPosition.z;}
             else{wallBorders[i] = wall.transform.localPosition.x;}
-            if (coverMaterial != null)
+            if (wallMaterial != null)
             {
                 Renderer renderer = wall.GetComponent<Renderer>();
                 if (renderer != null)
@@ -201,14 +228,19 @@ public class CreateBoard075 : MonoBehaviour
         target.transform.localRotation = Quaternion.identity;
     }
 
-    public void ObjectPos(){
+    public void ObjectPos(float wall_dist){
         Vector3 target_start;
         Vector3 product_start;
         do {
             target_start = randomPos();
             product_start = randomPos();
-        } while (Vector3.Distance(target_start, product_start) < 10f);
-      
+            wallDistCheck++;
+            if (wallDistCheck > 50){
+                wallDistCheck = 0;
+                RecreateMaze();
+            }
+        } while (Vector3.Distance(target_start, product_start) < 8f || wall_dist < 2f);
+        wallDistCheck = 0;
         target.transform.localPosition = target_start;
         product.transform.localPosition = product_start;
 
@@ -227,7 +259,7 @@ public class CreateBoard075 : MonoBehaviour
         return new Vector3(Random.Range(wallBorders[0]-(scale/2)-0.5f, wallBorders[1]+(scale/2)+0.5f), Random.Range(6.5f,9.8f), Random.Range(wallBorders[2]-(scale/2)-0.5f, wallBorders[3]+(scale/2)+0.5f));
     }    
 
-public void ClearEnvironment()
+    public void ClearEnvironment()
     {
         foreach (Transform child in boxesArray)
         {
@@ -246,4 +278,51 @@ public void ClearEnvironment()
         cover = null;
     }
 
+    public void CreateMaze()
+    {
+        master.transform.parent = transform;
+        int LayerIgnoreRaycast = LayerMask.NameToLayer("Walls");
+        maze = new List<GameObject>(System.Convert.ToInt32(((wallBorders[0]-wallBorders[1])/7f)*((wallBorders[2]-wallBorders[3])/7f)));
+        for (float x = wallBorders[1]+0.1f; x < wallBorders[0]-0.1f; x += 7f)
+        {
+            for (float z = wallBorders[3]; z < wallBorders[2]; z += 7f)
+            {
+                if (Random.Range(0f, 1f) < 0.4f)
+                {
+                    Quaternion rot = Quaternion.Euler(0f,Random.Range(0f, 360f),0f);
+                    GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    wall.layer = LayerIgnoreRaycast;
+                    wall.tag = "Wall";
+                    wall.transform.parent = transform;
+                    Vector3 position = new Vector3(x, 0f, z);
+
+                    wall.transform.localScale = new Vector3(0.2f,15f,5f);
+                    wall.transform.localPosition = position + new Vector3(0.5f, 8f, 0.5f);
+                    wall.transform.localRotation = rot;
+                    BoxCollider collider = wall.GetComponent<BoxCollider>();
+                    collider.isTrigger = true;
+                    if (mazeMaterial != null)
+                    {
+                        Renderer renderer = wall.GetComponent<Renderer>();
+                        if (renderer != null)
+                        {
+                            renderer.material = mazeMaterial;
+                        }
+                    }
+                    wall.transform.parent = master.transform;
+                    maze.Add(wall);
+                }
+            }
+        }
+    }
+
+    public void RecreateMaze(){
+        foreach (var wall in maze){
+            if (maze!=null){
+                Destroy(wall);
+            }
+        }
+        maze.Clear();
+        CreateMaze();
+    }
 }
