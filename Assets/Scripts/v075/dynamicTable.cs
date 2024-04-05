@@ -8,18 +8,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
+using System.Net;
 
 public class dynamicTable075 : Agent
 {
     [SerializeField] private bool showUI = false;
-    [SerializeField] private bool randomTableSize = false;
+    private bool randomTableSize = false;
     [SerializeField] private GameObject text;
     private TextMeshPro ui;
     private float directionPoint = 0;
-    public Vector3 oldLocation = new Vector3(0f,0f,0f);
-    Vector3 newLocation = new Vector3(0f,0f,0f);
     private int win = 0;
-    private float[] wallBorders;
     private CreateBoard075 table;
     private int rows;
     private int columns;
@@ -27,21 +25,27 @@ public class dynamicTable075 : Agent
     public Vector3[,] boxesLoc;
     private GameObject product;
     private GameObject target;
-    [SerializeField] [Range(7,8)] private int size = 8;
+    private int size = 8;
     [Range(0f,15f)] public float MoveSpeed = 10f;
     private Transform[] activeArray;
     private Rigidbody productRigidbody;
     private List<Tuple<int, int>> specifiedPoints;
     private bool onTarget = false;
     private productCollision075 productClass;
-    private rayRotation rayComp;
     private List<float> observation;
     private RayPerceptionOutput.RayOutput[] rayOutputs;
     private RayPerceptionSensorComponent3D rayPerceptionSensor;
-
+    private StatsRecorder recorder; 
+    private float difficulty;
+    private float multiplier = 0.0001f;
+    private int lastStep = 0;
+    private int trigger = 0;
+    private float freq = 0;
+    private int lose_streak = 0;
 
     void Awake()
     {
+        recorder = Academy.Instance.StatsRecorder;
         observation = new List<float>(10);
         if (MaxStep<1){
             MaxStep = 600;
@@ -58,13 +62,15 @@ public class dynamicTable075 : Agent
             ui = text.GetComponent<TextMeshPro>();
         }        
         table = transform.GetComponent<CreateBoard075>();
+        difficulty = table.getD;
+        freq = table.gfreq;
         rows = table.rows;
         columns = table.columns;
         foreach (Transform child in table.transform)
         {
             Destroy(child.gameObject);
         }
-        table.CreateEnv();
+        table.CreateEnv(difficulty);
         product = table.getProduct;
         Transform ray = product.transform.GetChild(0);
         rayPerceptionSensor = ray.GetComponent<RayPerceptionSensorComponent3D>();
@@ -77,15 +83,14 @@ public class dynamicTable075 : Agent
         boxesArray = table.getPieces;
         rows = table.rows;
         columns = table.columns;
-        wallBorders = table.getBorders;
         productClass = product.GetComponent<productCollision075>();
-        productClass.InitializeProduct(table.wallsArray,target,gameObject);
+        productClass.InitializeProduct(target,gameObject);
         boxesLoc = new Vector3[rows,columns];     
         for(int i=0; i<rows;i++){
             for(int j=0;j<columns;j++){
                 boxesLoc[i,j]=boxesArray[i,j].transform.localPosition;
             }
-        }        
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -93,7 +98,6 @@ public class dynamicTable075 : Agent
         int index = 0;
         int movingPartsIndex = 0;
         onTarget = productClass.triggered;
-        newLocation = product.transform.localPosition;
         GetActiveArray();
 
         foreach (Transform child in boxesArray)
@@ -129,30 +133,34 @@ public class dynamicTable075 : Agent
         {
             updateUI();
         }
-        oldLocation = product.transform.localPosition;
+        lastStep = StepCount;
     }
 
 
 
     public override void OnEpisodeBegin()
     {
+        recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
+        recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
+        recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
+        recorder.Add("Custom/Avg Wall Number",table.wallNumber,StatAggregationMethod.Average);
+        recorder.Add("Custom/Win",win,StatAggregationMethod.Average);
+        recorder.Add("Custom/Wall Crash",trigger,StatAggregationMethod.Average);
+        recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
+        randomTableSize = table.getRandomTableSize;
         if(!randomTableSize){
-            if(CompletedEpisodes%50 == 0){
-                table.RecreateMaze();
+            if(CompletedEpisodes%((int)freq) == 0 && table.gMaze){
+                table.RecreateMaze(difficulty);
             }
-            table.ObjectPos(table.GetWallDist());     
+            difficulty = table.ObjectPos(difficulty);
         }
         else{
-            table.ResetEnv();
+            table.ResetEnv(difficulty);
             rows = table.rows;
             columns = table.columns;
-            wallBorders = null;
             boxesArray = new Transform[rows,columns];
             boxesLoc = new Vector3[rows,columns];
-            wallBorders = table.getBorders;
             boxesArray = table.getPieces;
-            productCollision075 productClass = product.GetComponent<productCollision075>();
-            productClass.InitializeProduct(table.wallsArray,target,gameObject);
             for(int i=0; i<rows;i++){
                 for(int j=0;j<columns;j++){
                     boxesLoc[i,j]=boxesArray[i,j].transform.localPosition;
@@ -166,13 +174,26 @@ public class dynamicTable075 : Agent
     }
     
     public void triggerReset(){
-        AddReward(-4f);
+        difficulty = (float)Math.Pow(difficulty,multiplier) * difficulty;
+        freq = freq + freq*freq*0.00001f;
+        trigger++;
+        lose_streak++;
+        if (lose_streak>30){
+            if(table.gMaze){
+                table.RecreateMaze(difficulty);
+            }
+            difficulty = table.ObjectPos(difficulty);
+            lose_streak = 0;
+        }
+        AddReward(-5f);
         EndEpisode();
     }
     
     public void winReset(){
         win++;
-        AddReward(2f);
+        freq = freq - freq*freq*0.00001f;
+        difficulty = (float)(((float)Math.Pow(difficulty,multiplier) * difficulty) + (multiplier*0.6));
+        AddReward(100f * table.getSDistance / StepCount);
         EndEpisode();
     }
 
@@ -212,7 +233,7 @@ public class dynamicTable075 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nDifficulty: "+difficulty+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
     }
     private string ActiveMap(){
         string arrayString = "";

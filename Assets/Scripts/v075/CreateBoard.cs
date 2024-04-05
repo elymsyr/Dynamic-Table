@@ -4,12 +4,19 @@ using UnityEngine;
 public class CreateBoard075 : MonoBehaviour
 {
     [Header("Table Settings")]
-    public bool randomScale = false;
+    [SerializeField] private bool randomTableSize = false;
+    public bool getRandomTableSize => randomTableSize;
+    private bool Maze;
+    public bool gMaze => Maze;
+    [SerializeField] [Range(1,1000)]private float freq = 100;
+    public float gfreq => freq;    
     [SerializeField] [Range(15,50)] public int rows = 30;
     [SerializeField] [Range(15,50)] public int columns = 30;
+    [SerializeField] [Range(0.01f,0.1f)] private float difficulty = 0.03f;
+    public bool randomScale = false;
     [Header("Target Settings")]
     public bool TargetRun = false;
-    public bool RandomTargetSpeed = false;
+    public bool RandomTargetSpeed = true;
     [SerializeField] [Range(2f,6f)] public float TargetMoveSpeed = 4f;
     private float gap = 0.2f;
     [Header("Prefabs & Others")]
@@ -21,7 +28,7 @@ public class CreateBoard075 : MonoBehaviour
     private GameObject cover;
     private Transform[,] boxesArray;
     private float[] wallBorders;
-    public float[] getBorders => wallBorders ; 
+    public float[] getBorders => wallBorders;
     public Transform[,] getPieces => boxesArray;
     [SerializeField] private GameObject productPrefab;
     private GameObject product;
@@ -37,8 +44,12 @@ public class CreateBoard075 : MonoBehaviour
     public List<GameObject> maze;
     private GameObject master;
     private int wallDistCheck = 0;
+    public float getD => difficulty;
+    public int wallNumber = 0;
+    private float startDistance = 0;
+    public float getSDistance => startDistance;
 
-    public float GetWallDist(){
+    public float GetWallDist(GameObject ball){
         GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
         if (walls.Length == 0)
         {
@@ -48,7 +59,7 @@ public class CreateBoard075 : MonoBehaviour
 
         foreach (GameObject wall in walls)
         {
-            float distance = Vector3.Distance(transform.position, wall.transform.position);
+            float distance = Vector3.Distance(ball.transform.position, wall.transform.position);
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -57,28 +68,28 @@ public class CreateBoard075 : MonoBehaviour
         return closestDistance;
     }    
 
-    public void CreateEnv(){
+    public void CreateEnv(float difficulty){
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
         LoadPrefabs();
         master = new GameObject("Maze");
-        CreateMaze();
-        ObjectPos(GetWallDist());
+        CreateMaze(difficulty);
+        ObjectPos(difficulty);
     }
 
-    public void ResetEnv(){
+    public void ResetEnv(float difficulty){
         ClearEnvironment();
         int new_size = Random.Range(20,40);
         rows = new_size;
         columns = new_size;
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
-        ObjectPos(GetWallDist());
-        RecreateMaze();
+        ObjectPos(difficulty);
+        RecreateMaze(difficulty);
     }
 
     public void ResetEnvSimp(){
-        ObjectPos(GetWallDist());
+        ObjectPos(difficulty);
     }
     
     public Vector3 CreateBoxes()
@@ -228,7 +239,7 @@ public class CreateBoard075 : MonoBehaviour
         target.transform.localRotation = Quaternion.identity;
     }
 
-    public void ObjectPos(float wall_dist){
+    public float ObjectPos(float difficulty){
         Vector3 target_start;
         Vector3 product_start;
         do {
@@ -237,15 +248,16 @@ public class CreateBoard075 : MonoBehaviour
             wallDistCheck++;
             if (wallDistCheck > 50){
                 wallDistCheck = 0;
-                RecreateMaze();
+                difficulty = (float)System.Math.Pow(difficulty,0.0001f) * difficulty * 0.77f;
+                RecreateMaze(difficulty);
             }
-        } while (Vector3.Distance(target_start, product_start) < 8f || wall_dist < 2f);
+        } while (Vector3.Distance(target_start, product_start) < 8f || GetWallDist(target) < 3f || GetWallDist(product) < 2f);
         wallDistCheck = 0;
         target.transform.localPosition = target_start;
         product.transform.localPosition = product_start;
-
+        startDistance = Vector3.Distance(target_start, product_start);
         productCollision075 productClass = product.GetComponent<productCollision075>();
-        productClass.InitializeProduct(wallsArray,target,gameObject);
+        productClass.InitializeProduct(target,gameObject);
         if(randomScale){
             var new_scale = Random.Range(3f,5f);
             scale = new_scale;
@@ -253,6 +265,7 @@ public class CreateBoard075 : MonoBehaviour
         }
         else{scale = 4f;product.transform.localScale = new Vector3(scale,scale,scale);}
         target.SendMessage("GetBorders");
+        return difficulty;
     }
 
     private Vector3 randomPos(){
@@ -278,8 +291,9 @@ public class CreateBoard075 : MonoBehaviour
         cover = null;
     }
 
-    public void CreateMaze()
+    public void CreateMaze(float difficulty)
     {
+        wallNumber = 0;
         master.transform.parent = transform;
         int LayerIgnoreRaycast = LayerMask.NameToLayer("Walls");
         maze = new List<GameObject>(System.Convert.ToInt32(((wallBorders[0]-wallBorders[1])/7f)*((wallBorders[2]-wallBorders[3])/7f)));
@@ -287,8 +301,9 @@ public class CreateBoard075 : MonoBehaviour
         {
             for (float z = wallBorders[3]; z < wallBorders[2]; z += 7f)
             {
-                if (Random.Range(0f, 1f) < 0.4f)
+                if (Random.Range(0f, 1f) < difficulty)
                 {
+                    wallNumber++;
                     Quaternion rot = Quaternion.Euler(0f,Random.Range(0f, 360f),0f);
                     GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     wall.layer = LayerIgnoreRaycast;
@@ -316,13 +331,13 @@ public class CreateBoard075 : MonoBehaviour
         }
     }
 
-    public void RecreateMaze(){
+    public void RecreateMaze(float difficulty){
         foreach (var wall in maze){
             if (maze!=null){
                 Destroy(wall);
             }
         }
         maze.Clear();
-        CreateMaze();
+        CreateMaze(difficulty);
     }
 }

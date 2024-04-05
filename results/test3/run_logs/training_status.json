@@ -1,0 +1,29 @@
+{
+    "Dynamic Table": {
+        "checkpoints": [
+            {
+                "steps": 9401,
+                "file_path": "results\\test3\\Dynamic Table\\Dynamic Table-9401.onnx",
+                "reward": -3.08368820820623,
+                "creation_time": 1711986932.3309977,
+                "auxillary_file_paths": [
+                    "results\\test3\\Dynamic Table\\Dynamic Table-9401.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 9401,
+            "file_path": "results\\test3\\Dynamic Table.onnx",
+            "reward": -3.08368820820623,
+            "creation_time": 1711986932.3309977,
+            "auxillary_file_paths": [
+                "results\\test3\\Dynamic Table\\Dynamic Table-9401.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.2.1"
+    }
+}

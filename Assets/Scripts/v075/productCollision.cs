@@ -2,13 +2,11 @@ using UnityEngine;
 
 public class productCollision075 : MonoBehaviour
 {
-    private GameObject[] walls;
     private GameObject target;
     private GameObject receiverObject;
     public bool triggered = false;
 
-    public void InitializeProduct(GameObject[] setWalls,GameObject setTarget, GameObject receiver){
-        walls = setWalls;
+    public void InitializeProduct(GameObject setTarget, GameObject receiver){
         target = setTarget;
         receiverObject = receiver;
     } 

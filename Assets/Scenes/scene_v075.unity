@@ -195,9 +195,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 112c23eeee0c1074cb384b8c6ff0ec9c, type: 3}
   m_InferenceDevice: 1
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: Dynamic Table
   TeamId: 0
   m_UseChildSensors: 1
@@ -215,9 +215,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomScale: 0
+  randomTableSize: 0
   rows: 30
   columns: 30
+  difficulty: 0.03
+  randomScale: 0
   TargetRun: 0
   RandomTargetSpeed: 1
   TargetMoveSpeed: 4
@@ -229,9 +231,7 @@ MonoBehaviour:
   targetPrefab: {fileID: 1213710263}
   wallsArray: []
   maze: []
-  wallPrefab: {fileID: 0}
-  mazeWidth: 0
-  mazeHeight: 0
+  wallNumber: 0
 --- !u!114 &124948874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,10 +249,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 600
   showUI: 1
-  randomTableSize: 0
   text: {fileID: 1124425823}
-  oldLocation: {x: 0, y: 0, z: 0}
-  size: 8
   MoveSpeed: 10
 --- !u!1 &632797338
 GameObject:
