@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 4
+  DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
 --- !u!114 &124948872
 MonoBehaviour:
@@ -186,19 +186,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 62
+    VectorObservationSize: 1
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 44
-      BranchSizes: 
-    VectorActionSize: 2c000000
+      m_NumContinuousActions: 0
+      BranchSizes: 01000000
+    VectorActionSize: 01000000
     VectorActionDescriptions: []
-    VectorActionSpaceType: 1
+    VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 112c23eeee0c1074cb384b8c6ff0ec9c, type: 3}
-  m_InferenceDevice: 1
-  m_BehaviorType: 2
-  m_BehaviorName: Dynamic Table
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: My Behavior
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -212,10 +212,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 124948865}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
+  m_Script: {fileID: 11500000, guid: a2e8bbb5e11642d4a96f6a16033dcfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
   difficulty: 0.03
@@ -223,12 +225,12 @@ MonoBehaviour:
   TargetRun: 0
   RandomTargetSpeed: 1
   TargetMoveSpeed: 4
-  boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
-  coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
-  wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
-  mazeMaterial: {fileID: 2100000, guid: 3458e0b93cad584458476b10a6973bea, type: 2}
-  productPrefab: {fileID: 1853815523}
-  targetPrefab: {fileID: 1213710263}
+  boxMaterial: {fileID: 0}
+  coverMaterial: {fileID: 0}
+  wallMaterial: {fileID: 0}
+  mazeMaterial: {fileID: 0}
+  productPrefab: {fileID: 0}
+  targetPrefab: {fileID: 0}
   wallsArray: []
   maze: []
   wallNumber: 0
@@ -241,15 +243,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 124948865}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2099eb595afef46a5ca58ca600163c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b3031a9100752a48a645ebe5fc6bf1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 600
-  showUI: 1
-  text: {fileID: 1124425823}
+  MaxStep: 0
+  showUI: 0
+  text: {fileID: 0}
   MoveSpeed: 10
 --- !u!1 &632797338
 GameObject:
@@ -843,7 +845,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1213710263}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15fef56eff51e784993b08a349f6e45e, type: 3}
+  m_Script: {fileID: 11500000, guid: b2fe150f9dd3f0e4291351763634f9af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1348996903
@@ -1056,8 +1058,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1547414872}
   - component: {fileID: 1547414875}
-  - component: {fileID: 1547414874}
   - component: {fileID: 1547414873}
+  - component: {fileID: 1547414876}
   m_Layer: 0
   m_Name: Ray
   m_TagString: Untagged
@@ -1107,18 +1109,6 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
---- !u!114 &1547414874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1547414871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac4f4bce5b1dcd54685c7aa63323cc9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!33 &1547414875
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1127,6 +1117,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547414871}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1547414876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547414871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4ffc19287840241bdbb2e05f579deb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1552040088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1305,7 +1307,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1853815523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5423407ae5b47364ba0c5f35b21f7e40, type: 3}
+  m_Script: {fileID: 11500000, guid: bb375e20241e1e844bd920f69139b5e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   triggered: 0

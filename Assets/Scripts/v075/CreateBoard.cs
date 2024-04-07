@@ -6,7 +6,7 @@ public class CreateBoard075 : MonoBehaviour
     [Header("Table Settings")]
     [SerializeField] private bool randomTableSize = false;
     public bool getRandomTableSize => randomTableSize;
-    private bool Maze;
+    [SerializeField] private bool Maze = false;
     public bool gMaze => Maze;
     [SerializeField] [Range(1,1000)]private float freq = 100;
     public float gfreq => freq;    
@@ -73,7 +73,9 @@ public class CreateBoard075 : MonoBehaviour
         CreateWalls(boardSize);
         LoadPrefabs();
         master = new GameObject("Maze");
-        CreateMaze(difficulty);
+        if(Maze){
+            CreateMaze(difficulty); 
+        }
         ObjectPos(difficulty);
     }
 

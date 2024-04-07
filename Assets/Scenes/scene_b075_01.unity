@@ -538,6 +538,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomTableSize: 0
+  Maze: 1
+  freq: 100
   rows: 30
   columns: 30
   difficulty: 0.03
@@ -876,6 +878,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomTableSize: 0
+  Maze: 1
+  freq: 100
   rows: 30
   columns: 30
   difficulty: 0.05
@@ -1257,6 +1261,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
   difficulty: 0.01
@@ -1491,6 +1497,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomTableSize: 0
+  Maze: 1
+  freq: 100
   rows: 30
   columns: 30
   difficulty: 0.03

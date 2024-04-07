@@ -123,6 +123,98 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &92646583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 92646586}
+  - component: {fileID: 92646585}
+  - component: {fileID: 92646584}
+  m_Layer: 0
+  m_Name: Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &92646584
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92646583}
+  m_Enabled: 1
+--- !u!20 &92646585
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92646583}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &92646586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92646583}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.20039031, y: 0.5382906, z: -0.1364123, w: 0.8071422}
+  m_LocalPosition: {x: 26.9, y: 48, z: -56.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 28.057, y: 67.327, z: -0.29}
 --- !u!1 &113523025
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,18 +583,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomScale: 0
+  randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
+  difficulty: 0.03
+  randomScale: 0
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
   wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
+  mazeMaterial: {fileID: 0}
   productPrefab: {fileID: 1782148926}
   targetPrefab: {fileID: 1883116601}
   wallsArray: []
+  maze: []
+  wallNumber: 0
 --- !u!114 &1283847473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,10 +619,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 700
   showUI: 0
-  randomTableSize: 0
   text: {fileID: 0}
-  oldLocation: {x: 0, y: 0, z: 0}
-  size: 8
   MoveSpeed: 10
 --- !u!4 &1283847474
 Transform:
@@ -722,18 +818,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomScale: 0
+  randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
+  difficulty: 0.03
+  randomScale: 0
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
   wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
+  mazeMaterial: {fileID: 0}
   productPrefab: {fileID: 1782148926}
   targetPrefab: {fileID: 1883116601}
   wallsArray: []
+  maze: []
+  wallNumber: 0
 --- !u!114 &1379255100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -751,10 +854,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 700
   showUI: 0
-  randomTableSize: 0
   text: {fileID: 0}
-  oldLocation: {x: 0, y: 0, z: 0}
-  size: 8
   MoveSpeed: 10
 --- !u!4 &1379255101
 Transform:
@@ -1240,18 +1340,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomScale: 0
+  randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
+  difficulty: 0.03
+  randomScale: 0
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
   wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
+  mazeMaterial: {fileID: 0}
   productPrefab: {fileID: 1782148926}
   targetPrefab: {fileID: 1883116601}
   wallsArray: []
+  maze: []
+  wallNumber: 0
 --- !u!114 &1795648413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1269,10 +1376,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 700
   showUI: 0
-  randomTableSize: 0
   text: {fileID: 0}
-  oldLocation: {x: 0, y: 0, z: 0}
-  size: 8
   MoveSpeed: 10
 --- !u!4 &1795648414
 Transform:
@@ -1484,18 +1588,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772013d69954fd345a6cccb2102e809c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomScale: 0
+  randomTableSize: 0
+  Maze: 0
+  freq: 100
   rows: 30
   columns: 30
+  difficulty: 0.03
+  randomScale: 0
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
   wallMaterial: {fileID: 2100000, guid: d1e1f85a1659a5c469a48127f4099109, type: 2}
+  mazeMaterial: {fileID: 0}
   productPrefab: {fileID: 1782148926}
   targetPrefab: {fileID: 1883116601}
   wallsArray: []
+  maze: []
+  wallNumber: 0
 --- !u!114 &2086159319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1513,10 +1624,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 700
   showUI: 0
-  randomTableSize: 0
   text: {fileID: 0}
-  oldLocation: {x: 0, y: 0, z: 0}
-  size: 8
   MoveSpeed: 10
 --- !u!4 &2086159320
 Transform:
@@ -1543,3 +1651,4 @@ SceneRoots:
   - {fileID: 1795648414}
   - {fileID: 1283847474}
   - {fileID: 2086159320}
+  - {fileID: 92646586}

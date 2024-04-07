@@ -140,6 +140,18 @@ public class dynamicTable075 : Agent
 
     public override void OnEpisodeBegin()
     {
+        if (freq > 500){
+            freq = 500;
+        }
+        else if(freq < 10){
+            freq = 10;
+        }
+        if(difficulty > 0.4f){
+            difficulty = 0.4f;
+        }
+        else if(difficulty < 0.001f){
+            difficulty = 0.001f;
+        }
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
@@ -233,7 +245,7 @@ public class dynamicTable075 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nDifficulty: "+difficulty+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nFrequency: "+freq+" ("+(int)freq+") "+"\nDifficulty: "+difficulty+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
     }
     private string ActiveMap(){
         string arrayString = "";
