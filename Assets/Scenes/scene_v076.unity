@@ -195,9 +195,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 112c23eeee0c1074cb384b8c6ff0ec9c, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: Dynamic Table
   TeamId: 0
   m_UseChildSensors: 1
@@ -217,8 +217,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Maze: 0
   freq: 30
-  rows: 40
-  columns: 40
+  rows: 22
+  columns: 22
   difficulty: 0.03
   TargetRun: 0
   RandomTargetSpeed: 0
@@ -246,7 +246,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 600
+  MaxStep: 500
   showUI: 1
   text: {fileID: 1124425823}
   MoveSpeed: 10

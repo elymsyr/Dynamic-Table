@@ -9,6 +9,7 @@ using System.Linq;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
 using System.Net;
+using Unity.VisualScripting;
 
 public class dynamicTable076 : Agent
 {
@@ -94,6 +95,7 @@ public class dynamicTable076 : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        if(table.gMaze){AddReward(-0.0001f);}
         int index = 0;
         int movingPartsIndex = 0;
         onTarget = productClass.triggered;
@@ -121,12 +123,21 @@ public class dynamicTable076 : Agent
                 Debug.Log("Null child founded!");
             }
         }
-        directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
-        if(directionPoint<0.1f && directionPoint>0){directionPoint*=-1;}
-        var heightPoint = Math.Abs(product.transform.localPosition.y-7.8f);
         if (!onTarget){
-            float reward = 0.0001f * ((directionPoint*productRigidbody.velocity.magnitude)+0.00001f)*(1f/((heightPoint*heightPoint*targetCloseness())+0.0001f));
-            AddReward(reward);            
+            directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
+            float heightPoint = product.transform.localPosition.y;
+            float closeness = targetCloseness();
+            float speed = productRigidbody.velocity.magnitude;
+            if(directionPoint<0.35f && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
+            if(speed < 0.1f){speed = 0.1f;}
+            if(closeness<0.1){closeness = 0.1f;}
+            float reward_increase = directionPoint * speed * speed * multiplier;
+            float reward_decrease = (float)Math.Pow(closeness, 0.1f);
+            float reward = reward_increase / reward_decrease;
+            if(directionPoint>=0){
+                reward += heightPoint*multiplier*0.3f;
+            }
+            AddReward(reward);
         }
         if (showUI)
         {
@@ -152,12 +163,14 @@ public class dynamicTable076 : Agent
             difficulty = 0.001f;
         }
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
-        recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
-        recorder.Add("Custom/Avg Wall Number",table.getWallNumber,StatAggregationMethod.Average);
         recorder.Add("Custom/Win",win,StatAggregationMethod.Average);
-        recorder.Add("Custom/Wall Crash",trigger,StatAggregationMethod.Average);
-        recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
+        if(table.gMaze){
+            recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
+            recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
+            recorder.Add("Custom/Avg Wall Number",table.getWallNumber,StatAggregationMethod.Average);
+            recorder.Add("Custom/Wall Crash",trigger,StatAggregationMethod.Average);
+        }
         if(CompletedEpisodes%((int)freq) == 0 && table.gMaze){
             table.SetMaze(difficulty);
         }
@@ -180,7 +193,8 @@ public class dynamicTable076 : Agent
             difficulty = table.ObjectPos(difficulty);
             lose_streak = 0;
         }
-        AddReward(-3f);
+        if(!table.gMaze){AddReward(-3f);}
+        else{AddReward(-10f);}
         EndEpisode();
     }
     
@@ -188,7 +202,8 @@ public class dynamicTable076 : Agent
         win++;
         freq = freq - freq*freq*0.001f;
         difficulty = (float)(((float)Math.Pow(difficulty,multiplier) * difficulty) + (multiplier*0.6));
-        AddReward(2.75f * table.getSDistance / StepCount);
+        if(!table.gMaze){AddReward(10*table.getSDistance/lastStep);}
+        else{AddReward(10f);}
         EndEpisode();
     }
 
