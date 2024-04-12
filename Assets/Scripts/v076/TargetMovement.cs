@@ -48,8 +48,8 @@ public class TargetMovement076 : MonoBehaviour
                 else if(newZPosition < wallBorders[3]+border){ Z = System.Math.Abs(Z); run = false; }
                 transform.localPosition = new Vector3(newXPosition, transform.localPosition.y, newZPosition);
                 if ((Vector3.Distance(product.transform.localPosition, transform.localPosition) < distance) && run){
-                    float randomX = Random.Range(0f, 3f);
-                    float randomZ = Random.Range(0f, 3f);
+                    float randomX = Random.Range(0f, 1f);
+                    float randomZ = Random.Range(0f, 1f);
                     if (randomX < 0.1f){X = -X;}
                     if (randomZ < 0.1f){Z = -Z;}
                 }
@@ -62,6 +62,6 @@ public class TargetMovement076 : MonoBehaviour
         startrun = true;
         isMovementOn = table.TargetRun;
         var RandomSpeed = table.RandomTargetSpeed;
-        if(RandomSpeed){table.TargetMoveSpeed = Random.Range(2f,6f);}
+        if(RandomSpeed){table.TargetMoveSpeed = Random.Range(2f,7f);}
     }
 }

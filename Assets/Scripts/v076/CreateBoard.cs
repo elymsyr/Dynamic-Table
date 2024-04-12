@@ -232,7 +232,9 @@ public class CreateBoard076 : MonoBehaviour
             do {
                 if (wallDistCheck > 10){
                     wallDistCheck = 0;
-                    diff = (float)System.Math.Pow(diff,0.0001f) * diff * 0.84f;
+                    if (diff > 0.4f){diff-=0.1f;}
+                    else{diff -= 0.01f;}
+                    if(diff < 0.03f){diff = 0.03f;}
                     SetMaze(diff);
                 }
                 target_start = randomPos();
@@ -246,7 +248,8 @@ public class CreateBoard076 : MonoBehaviour
                     target_start = randomPos();
                     product_start = randomPos();
                     target.transform.localPosition = target_start;
-                    product.transform.localPosition = product_start;                    
+                    product.transform.localPosition = product_start;
+                    break;                    
                 }
             } while (GetWallDist(target) < 2f || GetWallDist(product) < 2.6f);
 
@@ -342,7 +345,7 @@ public class CreateBoard076 : MonoBehaviour
     public void SetMaze(float diff){
         ResetWalls();
         wallNumber = 0;
-        int wall_index = 0;
+        int wall_index = -1;
         for (float x = wallBorders[1]-0.1f; x < wallBorders[0]+0.1f; x += 10f)
         {
             for (float z = wallBorders[3]-0.1f; z < wallBorders[2]+0.1f; z += 10f)

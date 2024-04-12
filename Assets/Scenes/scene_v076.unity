@@ -195,9 +195,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_Model: {fileID: 5022602860645237092, guid: 001b37edf6dfbdd45b21a47289dfa767, type: 3}
+  m_InferenceDevice: 1
+  m_BehaviorType: 2
   m_BehaviorName: Dynamic Table
   TeamId: 0
   m_UseChildSensors: 1
@@ -215,13 +215,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e8bbb5e11642d4a96f6a16033dcfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 0
-  freq: 30
+  Maze: 1
+  freq: 10
   rows: 22
   columns: 22
-  difficulty: 0.03
+  difficulty: 0.4
   TargetRun: 0
-  RandomTargetSpeed: 0
+  RandomTargetSpeed: 1
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}

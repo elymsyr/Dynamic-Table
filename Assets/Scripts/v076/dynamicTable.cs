@@ -13,6 +13,7 @@ using Unity.VisualScripting;
 
 public class dynamicTable076 : Agent
 {
+    private int state = 0;
     [SerializeField] private bool showUI = false;
     [SerializeField] private GameObject text;
     private TextMeshPro ui;
@@ -128,10 +129,11 @@ public class dynamicTable076 : Agent
             float heightPoint = product.transform.localPosition.y;
             float closeness = targetCloseness();
             float speed = productRigidbody.velocity.magnitude;
-            if(directionPoint<0.35f && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
+            if(directionPoint<0.6f && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
+            else if (table.gMaze && directionPoint > difficulty-UnityEngine.Random.Range(1.0f, 1.15f) && directionPoint < 0){directionPoint*=-1;} // New Row
             if(speed < 0.1f){speed = 0.1f;}
             if(closeness<0.1){closeness = 0.1f;}
-            float reward_increase = directionPoint * speed * speed * multiplier;
+            float reward_increase = directionPoint * speed * speed * multiplier + (speed/100);
             float reward_decrease = (float)Math.Pow(closeness, 0.1f);
             float reward = reward_increase / reward_decrease;
             if(directionPoint>=0){
@@ -156,15 +158,15 @@ public class dynamicTable076 : Agent
         else if(freq < 10){
             freq = 10;
         }
-        if(difficulty > 0.4f){
-            difficulty = 0.4f;
+        if(difficulty > 0.6f){
+            difficulty = 0.6f;
         }
-        else if(difficulty < 0.001f){
-            difficulty = 0.001f;
+        else if(difficulty < 0.03f){
+            difficulty = 0.03f;
         }
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
-        recorder.Add("Custom/Win",win,StatAggregationMethod.Average);
+        recorder.Add("Custom/Win",state,StatAggregationMethod.Average);
         if(table.gMaze){
             recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
             recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
@@ -182,28 +184,30 @@ public class dynamicTable076 : Agent
     }
     
     public void triggerReset(){
-        difficulty = (float)Math.Pow(difficulty,multiplier) * difficulty;
-        freq = freq + freq*freq*0.001f;
+        state -= 1;
+        difficulty = (float)Math.Pow(difficulty,multiplier) * difficulty * 0.99f;
+        freq += 0.5f;
         trigger++;
         lose_streak++;
         if (lose_streak>freq*0.8f){
             if(table.gMaze){
-                table.SetMaze(difficulty);
+                table.SetMaze(difficulty-0.01f);
             }
             difficulty = table.ObjectPos(difficulty);
             lose_streak = 0;
         }
         if(!table.gMaze){AddReward(-3f);}
-        else{AddReward(-10f);}
+        else{AddReward(-1f);}
         EndEpisode();
     }
     
     public void winReset(){
         win++;
-        freq = freq - freq*freq*0.001f;
-        difficulty = (float)(((float)Math.Pow(difficulty,multiplier) * difficulty) + (multiplier*0.6));
+        freq -= freq*0.5f;
+        state += 1;
+        difficulty = (float)((float)Math.Pow(difficulty/multiplier,multiplier) * difficulty * 1.04);
         if(!table.gMaze){AddReward(10*table.getSDistance/lastStep);}
-        else{AddReward(10f);}
+        else{AddReward(2f);}
         EndEpisode();
     }
 

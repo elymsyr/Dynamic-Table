@@ -200,10 +200,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Maze: 1
-  freq: 30
+  freq: 10
   rows: 18
   columns: 18
-  difficulty: 0.03
+  difficulty: 0.2
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
@@ -243,7 +243,7 @@ Transform:
   m_GameObject: {fileID: 17467108}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 197.7, y: 0, z: 123.8}
+  m_LocalPosition: {x: 196, y: 0, z: 111.799995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -685,10 +685,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Maze: 1
-  freq: 30
+  freq: 10
   rows: 25
   columns: 25
-  difficulty: 0.03
+  difficulty: 0.4
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
@@ -728,7 +728,7 @@ Transform:
   m_GameObject: {fileID: 484986370}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 197.7, y: 0, z: 0}
+  m_LocalPosition: {x: 196, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1361,10 +1361,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Maze: 1
-  freq: 30
+  freq: 1
   rows: 20
   columns: 20
-  difficulty: 0.03
+  difficulty: 0.2
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
@@ -1404,7 +1404,7 @@ Transform:
   m_GameObject: {fileID: 1767027094}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 85, y: 0, z: 0}
+  m_LocalPosition: {x: 85.8, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1488,10 +1488,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Maze: 1
-  freq: 30
+  freq: 10
   rows: 22
   columns: 22
-  difficulty: 0.03
+  difficulty: 0.3
   TargetRun: 0
   RandomTargetSpeed: 0
   TargetMoveSpeed: 4
@@ -1531,7 +1531,7 @@ Transform:
   m_GameObject: {fileID: 1856587556}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 85, y: 0, z: 122.1}
+  m_LocalPosition: {x: 85.8, y: 0, z: 112.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
