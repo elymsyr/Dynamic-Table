@@ -6,9 +6,9 @@ behaviors:
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
-      learning_rate: 0.0006
+      learning_rate: 0.0008
       beta: 0.005
-      epsilon: 0.2
+      epsilon: 0.25
       lambd: 0.95
       num_epoch: 3
       shared_critic: false
@@ -45,7 +45,7 @@ behaviors:
     self_play: null
     behavioral_cloning: null
 env_settings:
-  env_path: Builds\b076_focused_maze5resume
+  env_path: Builds\b077o
   env_args: null
   base_port: 5004
   num_envs: 4
@@ -64,10 +64,10 @@ engine_settings:
   no_graphics: true
 environment_parameters: null
 checkpoint_settings:
-  run_id: b076_focused_maze5fromrun
+  run_id: b077o
   initialize_from: null
   load_model: false
-  resume: true
+  resume: false
   force: false
   train_model: false
   inference: false

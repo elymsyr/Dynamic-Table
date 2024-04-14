@@ -39,7 +39,7 @@ public class CreateBoard077 : MonoBehaviour
     public float productScale => scale;
     public GameObject[] wallsArray; 
     public List<GameObject> maze;
-    // private int wallDistCheck = 0;
+    private int wallDistCheck = 0;
     public float getD => difficulty;
     private int wallNumber = 0;
     public int getWallNumber => wallNumber;
@@ -69,14 +69,12 @@ public class CreateBoard077 : MonoBehaviour
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
         LoadPrefabs();
-        // CreateMaze();
+        CreateMaze();
         ObjectPos(difficulty);
     }
     
     public Vector3 CreateBoxes()
     {
-
-        // Pieces
         pieces = new GameObject("Pieces");
         pieces.transform.parent = transform;    
 
@@ -220,79 +218,61 @@ public class CreateBoard077 : MonoBehaviour
         target.transform.localRotation = Quaternion.identity;
     }
 
-    // public float ObjectPos(float diff){
-    //     Vector3 target_start = randomPos();
-    //     Vector3 product_start = randomPos();      
-    //     bool positining = true;
-    //     wallDistCheck = 0;
-    //     int positiningCount = 0;
-    //     int mazePositiningCount = 0;
-        
-    //     while(positining){
-    //         do {
-    //             if (wallDistCheck > 10){
-    //                 wallDistCheck = 0;
-    //                 if (diff > 0.4f){diff-=0.1f;}
-    //                 else{diff -= 0.01f;}
-    //                 if(diff < 0.03f){diff = 0.03f;}
-    //                 // SetMaze(diff);
-    //             }
-    //             target_start = randomPos();
-    //             product_start = randomPos();
-    //             target.transform.localPosition = target_start;
-    //             product.transform.localPosition = product_start;
-    //             wallDistCheck++;
-    //             mazePositiningCount++;
-    //             if(mazePositiningCount > 100){
-    //                 // ResetWalls();
-    //                 target_start = randomPos();
-    //                 product_start = randomPos();
-    //                 target.transform.localPosition = target_start;
-    //                 product.transform.localPosition = product_start;
-    //                 break;                    
-    //             }
-    //         } while (GetWallDist(target) < 2f || GetWallDist(product) < 2.6f);
-
-    //         if(Vector3.Distance(target_start, product_start) > 11f){
-    //             positining = false;
-    //         }
-
-    //         if(positiningCount > 10){
-    //             // ResetWalls();
-    //             target.transform.localPosition = randomPos();
-    //             product.transform.localPosition = randomPos();
-    //             break;
-    //         }
-    //         positiningCount++;
-    //     }
-
-    //     startDistance = Vector3.Distance(target_start, product_start);
-    //     productCollision077 productClass = product.GetComponent<productCollision077>();
-    //     productClass.InitializeProduct(target,gameObject);
-    //     target.SendMessage("GetBorders");
-    //     return diff;
-    // }
-
     public float ObjectPos(float diff){
         Vector3 target_start = randomPos();
         Vector3 product_start = randomPos();      
+        bool positining = true;
+        wallDistCheck = 0;
+        int positiningCount = 0;
+        int mazePositiningCount = 0;
+        
+        while(positining){
+            do {
+                if (wallDistCheck > 10){
+                    wallDistCheck = 0;
+                    if (diff > 0.4f){diff-=0.1f;}
+                    else{diff -= 0.01f;}
+                    if(diff < 0.03f){diff = 0.03f;}
+                    SetMaze(diff);
+                }
+                target_start = randomPos();
+                product_start = randomPos();
+                target.transform.localPosition = target_start;
+                product.transform.localPosition = product_start;
+                wallDistCheck++;
+                mazePositiningCount++;
+                if(mazePositiningCount > 100){
+                    ResetWalls();
+                    target_start = randomPos();
+                    product_start = randomPos();
+                    target.transform.localPosition = target_start;
+                    product.transform.localPosition = product_start;
+                    break;                    
+                }
+            } while (GetWallDist(target) < 2f || GetWallDist(product) < 2.6f);
 
-        do {
-            target_start = randomPos();
-            product_start = randomPos();
-            target.transform.localPosition = target_start;
-            product.transform.localPosition = product_start;
-        } while (Vector3.Distance(target_start, product_start) < 8f);
+            if(Vector3.Distance(target_start, product_start) > 8f){
+                positining = false;
+            }
+
+            if(positiningCount > 10){
+                ResetWalls();
+                target.transform.localPosition = randomPos();
+                product.transform.localPosition = randomPos();
+                break;
+            }
+            positiningCount++;
+        }
 
         startDistance = Vector3.Distance(target_start, product_start);
         productCollision077 productClass = product.GetComponent<productCollision077>();
         productClass.InitializeProduct(target,gameObject);
         target.SendMessage("GetBorders");
         return diff;
-    }    
+    }
 
     private Vector3 randomPos(){
-        return new Vector3(Random.Range(wallBorders[0]-(scale/2)-2.1f, wallBorders[1]+(scale/2)+2.1f), Random.Range(6.5f,9.8f), Random.Range(wallBorders[2]-(scale/2)-2.1f, wallBorders[3]+(scale/2)+2.1f));
+        return new Vector3(Random.Range(wallBorders[0]-(scale/2)-2.1f, wallBorders[1]+(scale/2)+2.1f), Random.Range(6.5f,8.5f), Random.Range(wallBorders[2]-(scale/2)-2.1f, wallBorders[3]+(scale/2)+2.1f));
     }    
 
     public void ClearEnvironment()
@@ -314,69 +294,69 @@ public class CreateBoard077 : MonoBehaviour
         cover = null;
     }
 
-    // public void CreateMaze()
-    // {
-    //     int wallNumberStart = 0;
-    //     wallNumber = 0;
-    //     int LayerIgnoreRaycast = LayerMask.NameToLayer("Walls");
-    //     for (float x = wallBorders[1]-0.1f; x <= wallBorders[0]+0.1f; x += 10f)
-    //     {
-    //         for (float z = wallBorders[3]-0.1f; z <= wallBorders[2]+0.1f; z += 10f)
-    //         {
-    //             wallNumberStart++;
-    //         }
-    //     }
-    //     maze = new List<GameObject>(wallNumberStart);
-    //     for (float x = wallBorders[1]-0.1f; x <= wallBorders[0]+0.1f; x += 10f)
-    //     {
-    //         for (float z = wallBorders[3]-0.1f; z <= wallBorders[2]+0.1f; z += 10f)
-    //         {
-    //             GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-    //             wall.layer = LayerIgnoreRaycast;
-    //             wall.tag = "Wall";
-    //             wall.transform.parent = transform;
-    //             wall.transform.localPosition = new Vector3(0, -11f, 0);
-    //             wall.transform.localScale = new Vector3(0.2f,15f,5f);
-    //             BoxCollider collider = wall.GetComponent<BoxCollider>();
-    //             collider.isTrigger = true;
-    //             if (mazeMaterial != null)
-    //             {
-    //                 Renderer renderer = wall.GetComponent<Renderer>();
-    //                 if (renderer != null)
-    //                 {
-    //                     renderer.material = mazeMaterial;
-    //                 }
-    //             }
-    //             maze.Add(wall);
-    //         }
-    //     }
-    // }
+    public void CreateMaze()
+    {
+        int wallNumberStart = 0;
+        wallNumber = 0;
+        int LayerIgnoreRaycast = LayerMask.NameToLayer("Walls");
+        for (float x = wallBorders[1]-0.1f; x <= wallBorders[0]+0.1f; x += 10f)
+        {
+            for (float z = wallBorders[3]-0.1f; z <= wallBorders[2]+0.1f; z += 10f)
+            {
+                wallNumberStart++;
+            }
+        }
+        maze = new List<GameObject>(wallNumberStart);
+        for (float x = wallBorders[1]-0.1f; x <= wallBorders[0]+0.1f; x += 10f)
+        {
+            for (float z = wallBorders[3]-0.1f; z <= wallBorders[2]+0.1f; z += 10f)
+            {
+                GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                wall.layer = LayerIgnoreRaycast;
+                wall.tag = "Wall";
+                wall.transform.parent = transform;
+                wall.transform.localPosition = new Vector3(0, -11f, 0);
+                wall.transform.localScale = new Vector3(0.2f,15f,5f);
+                BoxCollider collider = wall.GetComponent<BoxCollider>();
+                collider.isTrigger = true;
+                if (mazeMaterial != null)
+                {
+                    Renderer renderer = wall.GetComponent<Renderer>();
+                    if (renderer != null)
+                    {
+                        renderer.material = mazeMaterial;
+                    }
+                }
+                maze.Add(wall);
+            }
+        }
+    }
 
-    // public void ResetWalls(){
-    //     wallNumber = 0;
-    //     foreach(GameObject wall in maze)
-    //     {
-    //         wall.transform.localPosition = new Vector3(0f, -11f, 0f);
-    //     }        
-    // }
+    public void ResetWalls(){
+        wallNumber = 0;
+        foreach(GameObject wall in maze)
+        {
+            wall.transform.localPosition = new Vector3(0f, -11f, 0f);
+        }        
+    }
 
-    // public void SetMaze(float diff){
-    //     ResetWalls();
-    //     wallNumber = 0;
-    //     int wall_index = -1;
-    //     for (float x = wallBorders[1]-0.1f; x < wallBorders[0]+0.1f; x += 10f)
-    //     {
-    //         for (float z = wallBorders[3]-0.1f; z < wallBorders[2]+0.1f; z += 10f)
-    //         {
-    //             if (Random.Range(0f, 1f) < diff)
-    //             {
-    //                 if(wall_index++ < maze.Count && maze[wall_index] != null){
-    //                     wallNumber++;
-    //                     maze[wall_index].transform.localRotation = Quaternion.Euler(0f,Random.Range(0f, 360f),0f);
-    //                     maze[wall_index].transform.localPosition = new Vector3(x+1f, 8f, z+1f);
-    //                 }
-    //             }
-    //         }
-    //     } 
-    // }
+    public void SetMaze(float diff){
+        ResetWalls();
+        wallNumber = 0;
+        int wall_index = -1;
+        for (float x = wallBorders[1]-0.1f; x < wallBorders[0]+0.1f; x += 10f)
+        {
+            for (float z = wallBorders[3]-0.1f; z < wallBorders[2]+0.1f; z += 10f)
+            {
+                if (Random.Range(0f, 1f) < diff)
+                {
+                    if(wall_index++ < maze.Count && maze[wall_index] != null){
+                        wallNumber++;
+                        maze[wall_index].transform.localRotation = Quaternion.Euler(0f,Random.Range(0f, 360f),0f);
+                        maze[wall_index].transform.localPosition = new Vector3(x+1f, 8f, z+1f);
+                    }
+                }
+            }
+        } 
+    }
 }

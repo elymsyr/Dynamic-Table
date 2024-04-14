@@ -393,7 +393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 62
+    VectorObservationSize: 63
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -426,9 +426,9 @@ MonoBehaviour:
   freq: 20
   rows: 20
   columns: 20
-  difficulty: 0.03
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.01
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -453,7 +453,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 300
   showUI: 0
   text: {fileID: 0}
   MoveSpeed: 11
@@ -845,7 +845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 62
+    VectorObservationSize: 63
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -878,9 +878,9 @@ MonoBehaviour:
   freq: 20
   rows: 35
   columns: 35
-  difficulty: 0.03
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.01
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -1078,7 +1078,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 62
+    VectorObservationSize: 63
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -1111,9 +1111,9 @@ MonoBehaviour:
   freq: 20
   rows: 30
   columns: 30
-  difficulty: 0.03
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.01
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -1458,7 +1458,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 62
+    VectorObservationSize: 63
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -1491,9 +1491,9 @@ MonoBehaviour:
   freq: 20
   rows: 25
   columns: 25
-  difficulty: 0.03
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.01
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}

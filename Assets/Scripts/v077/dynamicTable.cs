@@ -6,9 +6,9 @@ using Unity.MLAgents.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-// using Unity.MLAgents.Policies;
-// using Unity.Barracuda;
-// using System.Net;
+using Unity.MLAgents.Policies;
+using Unity.Barracuda;
+using System.Net;
 using Unity.VisualScripting;
 
 public class dynamicTable077 : Agent
@@ -38,11 +38,11 @@ public class dynamicTable077 : Agent
     private RayPerceptionSensorComponent3D rayPerceptionSensor;
     private StatsRecorder recorder; 
     private float difficulty;
-    // private float multiplier = 0.0001f;
+    private float multiplier = 0.0001f;
     private int lastStep = 0;
     private int trigger = 0;
     private float freq = 0;
-    // private int lose_streak = 0;
+    private int lose_streak = 0;
 
     void Awake()
     {
@@ -64,7 +64,7 @@ public class dynamicTable077 : Agent
         }        
         table = transform.GetComponent<CreateBoard077>();
         difficulty = table.getD;
-        // freq = table.gfreq;
+        freq = table.gfreq;
         rows = table.rows;
         columns = table.columns;
         foreach (Transform child in table.transform)
@@ -96,7 +96,7 @@ public class dynamicTable077 : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // if(table.gMaze){AddReward(-0.0001f);}
+        if(table.gMaze){AddReward(-0.0001f);}
         int index = 0;
         int movingPartsIndex = 0;
         onTarget = productClass.triggered;
@@ -126,26 +126,14 @@ public class dynamicTable077 : Agent
         }
         if (!onTarget){
             directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
-            float heightPoint = product.transform.localPosition.y;
             float closeness = targetCloseness();
             float speed = productRigidbody.velocity.magnitude;
             if(directionPoint<0.4f && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
-            // else if (table.gMaze && directionPoint > difficulty-UnityEngine.Random.Range(1.0f, 1.15f) && directionPoint < 0){directionPoint*=-1;} // New Row
-            // if(speed < 0.1f){speed = 0.1f;}
+            else if (table.gMaze && directionPoint > -difficulty && directionPoint < 0){directionPoint*=-difficulty-directionPoint;}
+            if(speed < 0.1f){speed = 0.1f;}
             if(closeness<1){closeness = 1f;}
-            // float reward_increase = directionPoint * speed * speed * speed * multiplier;
-            // float reward_decrease = (float)Math.Pow(closeness, 0.1f);
-            // float reward = reward_increase / reward_decrease;
-            // // if(directionPoint>=0){
-            // //     reward += heightPoint*multiplier;
-            // // }
-            // if(directionPoint < 0 && closeness < 1){
-            //     reward *= Math.Abs(table.getSDistance - closeness)*0.1f*speed;
-            // }
-            // AddReward(reward);
-            float reward = ((directionPoint*speed*speed)+heightPoint)/closeness;
-            reward = rewardShrunk(reward);
-            AddReward(reward);
+            float reward = directionPoint*speed*speed/closeness;
+            AddReward(rewardShrunk(reward));
         }
         if (showUI)
         {
@@ -154,7 +142,7 @@ public class dynamicTable077 : Agent
         lastStep = StepCount;
     }
 
-    private float rewardShrunk(float reward, float min = -80 , float max = 100, float newMin = -0.1f, float newMax = 0.1f){
+    private float rewardShrunk(float reward, float min = -90 , float max = 90, float newMin = -0.09f, float newMax = 0.09f){
         if(reward>0){newMin=0; min = 0;}
         if(reward<0){newMax=0; max = 0;}
         return newMin + ((newMax-newMin)*(reward-min)/(max-min));
@@ -171,21 +159,21 @@ public class dynamicTable077 : Agent
         if(difficulty > 0.6f){
             difficulty = 0.6f;
         }
-        else if(difficulty < 0.03f){
-            difficulty = 0.03f;
+        else if(difficulty < 0.01f){
+            difficulty = 0.01f;
         }
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
         recorder.Add("Custom/Win",state,StatAggregationMethod.Average);
-        // if(table.gMaze){
-        //     recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
-        //     recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
-        //     recorder.Add("Custom/Avg Wall Number",table.getWallNumber,StatAggregationMethod.Average);
-        //     recorder.Add("Custom/Wall Crash",trigger,StatAggregationMethod.Average);
-        // }
-        // if(CompletedEpisodes%((int)freq) == 0 && table.gMaze){
-        //     table.SetMaze(difficulty);
-        // }
+        if(table.gMaze){
+            recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
+            recorder.Add("Custom/Wall Difficulty",difficulty,StatAggregationMethod.Average);
+            recorder.Add("Custom/Avg Wall Number",table.getWallNumber,StatAggregationMethod.Average);
+            recorder.Add("Custom/Wall Crash",trigger,StatAggregationMethod.Average);
+        }
+        if(CompletedEpisodes%((int)freq) == 0 && table.gMaze){
+            table.SetMaze(difficulty);
+        }
         difficulty = table.ObjectPos(difficulty);
         product.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         productRigidbody.velocity = Vector3.zero;
@@ -195,31 +183,28 @@ public class dynamicTable077 : Agent
     
     public void triggerReset(){
         state -= 1;
-        // difficulty = (float)Math.Pow(difficulty,multiplier) * difficulty * 0.99f;
-        // freq += 0.5f;
+        difficulty = (float)Math.Pow(difficulty,multiplier) * difficulty * 0.9f;
+        freq += 0.5f;
         trigger++;
-        // lose_streak++;
-        // if (lose_streak>freq*0.8f){
-        //     if(table.gMaze){
-        //         table.SetMaze(difficulty-0.01f);
-        //     }
-        //     difficulty = table.ObjectPos(difficulty);
-        //     lose_streak = 0;
-        // }
-        // if(!table.gMaze){AddReward(-3f);}
-        // else{AddReward(-1f);}
-        AddReward(-1f); // EXTRA
+        lose_streak++;
+        if (lose_streak>freq*0.8f){
+            if(table.gMaze){
+                table.SetMaze(difficulty-0.01f);
+            }
+            difficulty = table.ObjectPos(difficulty);
+            lose_streak = 0;
+        }
+        if(difficulty>0.5f){difficulty-=0.1f;}
+        AddReward(-1f);
         EndEpisode();
     }
     
     public void winReset(){
-        // win++;
-        // freq -= freq*0.5f;
-        // state += 1;
-        // difficulty = (float)((float)Math.Pow(difficulty/multiplier,multiplier) * difficulty * 1.04);
-        // if(!table.gMaze){AddReward(10*table.getSDistance/lastStep);}
-        // else{AddReward(2f);}
-        AddReward(1f); // EXTRA
+        win++;
+        freq -= freq*0.5f;
+        state += 1;
+        difficulty = (float)((float)Math.Pow(difficulty/multiplier,multiplier) * difficulty * 1.03);
+        AddReward(1f);
         EndEpisode();
     }
 
@@ -240,6 +225,7 @@ public class dynamicTable077 : Agent
         sensor.AddObservation(target.transform.localPosition);
         sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
+        sensor.AddObservation(difficulty);
         RayCollect();
         sensor.AddObservation(observation);
     }
