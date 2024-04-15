@@ -29,7 +29,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/scene_b076_focused_maze.unity
     guid: 598d05a15e842cb40a77208632075697
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/scene_b077.unity
     guid: a00b1e2db8dcaf14db928bdc7ff10b9f
+  - enabled: 1
+    path: Assets/Scenes/scene_b078.unity
+    guid: 5f8b8c6ec137a9c4b8cdeea9111d954f
   m_configObjects: {}

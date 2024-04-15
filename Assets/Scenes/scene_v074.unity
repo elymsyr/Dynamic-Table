@@ -195,7 +195,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 5c4be9604035033408c564ccbfc1aa89, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 4f64acf5c1f2a124da8bb542f763128a, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 2
   m_BehaviorName: Dynamic Table

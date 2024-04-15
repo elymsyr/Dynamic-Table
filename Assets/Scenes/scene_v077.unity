@@ -195,7 +195,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 65141978093929540956042eacd294c4, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ea543252131ad1a4e99c921df4246562, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 0
   m_BehaviorName: Dynamic Table
@@ -987,7 +987,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: e23aa9862d5d5af47bf56a270fde172d, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ea543252131ad1a4e99c921df4246562, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 0
   m_BehaviorName: Dynamic Table
