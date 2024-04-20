@@ -6,16 +6,16 @@ behaviors:
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
-      learning_rate: 0.0006
+      learning_rate: 0.001
       beta: 0.005
-      epsilon: 0.25
+      epsilon: 0.3
       lambd: 0.95
       num_epoch: 3
       shared_critic: false
       learning_rate_schedule: linear
       beta_schedule: linear
       epsilon_schedule: linear
-    checkpoint_interval: 1000000
+    checkpoint_interval: 988000
     network_settings:
       normalize: false
       hidden_units: 64
@@ -48,7 +48,7 @@ env_settings:
   env_path: Builds\b078
   env_args: null
   base_port: 5004
-  num_envs: 5
+  num_envs: 4
   num_areas: 1
   seed: -1
   max_lifetime_restarts: 10
@@ -64,7 +64,7 @@ engine_settings:
   no_graphics: true
 environment_parameters: null
 checkpoint_settings:
-  run_id: b078pc
+  run_id: b078pc2
   initialize_from: null
   load_model: false
   resume: false

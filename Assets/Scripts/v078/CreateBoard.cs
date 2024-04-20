@@ -69,7 +69,9 @@ public class CreateBoard078 : MonoBehaviour
         Vector3 boardSize = CreateBoxes();
         CreateWalls(boardSize);
         LoadPrefabs();
-        CreateMaze();
+        if(Maze){
+            CreateMaze();
+        }
         ObjectPos(difficulty);
     }
     

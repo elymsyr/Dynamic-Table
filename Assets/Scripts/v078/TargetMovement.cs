@@ -62,6 +62,6 @@ public class TargetMovement078 : MonoBehaviour
         startrun = true;
         isMovementOn = table.TargetRun;
         var RandomSpeed = table.RandomTargetSpeed;
-        if(RandomSpeed){table.TargetMoveSpeed = Random.Range(2f,7f);}
+        if(RandomSpeed){table.TargetMoveSpeed = Random.Range(2f,6f);}
     }
 }

@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 63
+    VectorObservationSize: 62
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -199,13 +199,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a41a04494f54142b165173f104ecdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 1
+  Maze: 0
   freq: 30
   rows: 30
   columns: 30
-  difficulty: 0.04
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.1
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -230,10 +230,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 500
   showUI: 0
   text: {fileID: 0}
-  MoveSpeed: 11
+  MoveSpeed: 14
 --- !u!4 &10833786
 Transform:
   m_ObjectHideFlags: 0
@@ -876,7 +876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 63
+    VectorObservationSize: 62
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -905,13 +905,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a41a04494f54142b165173f104ecdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 1
+  Maze: 0
   freq: 30
   rows: 20
   columns: 20
-  difficulty: 0.04
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.1
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -936,10 +936,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 500
   showUI: 0
   text: {fileID: 0}
-  MoveSpeed: 11
+  MoveSpeed: 14
 --- !u!4 &1393159687
 Transform:
   m_ObjectHideFlags: 0
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 63
+    VectorObservationSize: 62
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -1032,13 +1032,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a41a04494f54142b165173f104ecdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 1
+  Maze: 0
   freq: 30
   rows: 35
   columns: 35
-  difficulty: 0.04
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.1
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -1063,10 +1063,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 500
   showUI: 0
   text: {fileID: 0}
-  MoveSpeed: 11
+  MoveSpeed: 14
 --- !u!4 &1631207803
 Transform:
   m_ObjectHideFlags: 0
@@ -1130,7 +1130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 63
+    VectorObservationSize: 62
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 44
@@ -1159,13 +1159,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a41a04494f54142b165173f104ecdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 1
+  Maze: 0
   freq: 30
   rows: 25
   columns: 25
-  difficulty: 0.04
-  TargetRun: 1
-  RandomTargetSpeed: 1
+  difficulty: 0.1
+  TargetRun: 0
+  RandomTargetSpeed: 0
   TargetMoveSpeed: 4
   boxMaterial: {fileID: 2100000, guid: a61cb017c0358ee46be2affc7244d00f, type: 2}
   coverMaterial: {fileID: 2100000, guid: cd252fc1b36b5b74491f8ee82f5abcc4, type: 2}
@@ -1190,10 +1190,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 500
   showUI: 0
   text: {fileID: 0}
-  MoveSpeed: 11
+  MoveSpeed: 14
 --- !u!4 &1633863215
 Transform:
   m_ObjectHideFlags: 0

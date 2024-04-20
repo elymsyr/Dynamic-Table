@@ -14,6 +14,8 @@ using Unity.VisualScripting;
 public class dynamicTable078 : Agent
 {
     private int state = 0;
+    private int winState = 0;
+    private Queue<int> gameStates = new Queue<int>();
     [SerializeField] private bool showUI = false;
     [SerializeField] private GameObject text;
     private TextMeshPro ui;
@@ -131,8 +133,8 @@ public class dynamicTable078 : Agent
             heighpoint = Math.Abs(product.transform.localPosition.y - 6.1f);
             if(heighpoint<0.1f){heighpoint=0.1f;}
             float speed = productRigidbody.velocity.magnitude;
-            if(directionPoint<difficulty+0.1f && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
-            else if (table.gMaze && directionPoint > -difficulty && directionPoint < 0){directionPoint*=-difficulty-directionPoint;}
+            if(directionPoint<0.4 && directionPoint>0 && !table.gMaze){directionPoint*=-1;}
+            // else if (table.gMaze && directionPoint > -difficulty && directionPoint < 0){directionPoint*=-difficulty-directionPoint;}
             if(speed < 0.1f){speed = 0.1f;}
             if(closeness<1){closeness = 1f;}
             closeness = shrunk(closeness, min:1, max:40, newMin:1, newMax:10);
@@ -156,6 +158,11 @@ public class dynamicTable078 : Agent
 
     public override void OnEpisodeBegin()
     {
+        gameStates.Enqueue(winState);
+        if(gameStates.Count > 300){
+            gameStates.Dequeue();
+        }
+        winState = 0;
         MaxStep = (int)(400f+freq);
         if (freq > 500){
             freq = 100;
@@ -169,6 +176,7 @@ public class dynamicTable078 : Agent
         else if(difficulty < 0.01f){
             difficulty = 0.01f;
         }
+        recorder.Add("Custom/Win Percentage",CalculatePercentageOfOnes(),StatAggregationMethod.Average);
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
         recorder.Add("Custom/Win",state,StatAggregationMethod.Average);
@@ -185,6 +193,21 @@ public class dynamicTable078 : Agent
         activeArray = new Transform[size*size-specifiedPoints.Count];
         GetActiveArray();
     }
+
+    private float CalculatePercentageOfOnes()
+    {   if(gameStates.Count > 0){
+            int totalOnes = 0;
+            foreach (int item in gameStates)
+            {
+                if (item == 1)
+                {
+                    totalOnes++;
+                }
+            }
+            return ((float)totalOnes / gameStates.Count) * 100f;
+        }
+        else{return 0;}
+    }    
     
     public void triggerReset(){
         state -= 1;
@@ -206,6 +229,7 @@ public class dynamicTable078 : Agent
     
     public void winReset(){
         win++;
+        winState = 1;
         freq -= freq*0.2f;
         state += 1;
         difficulty = (float)((float)Math.Pow(difficulty/multiplier,multiplier) * difficulty * 1.03);
@@ -230,7 +254,7 @@ public class dynamicTable078 : Agent
         sensor.AddObservation(target.transform.localPosition);
         sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
-        sensor.AddObservation(difficulty);
+        // sensor.AddObservation(difficulty);
         RayCollect();
         sensor.AddObservation(observation);
     }
@@ -250,7 +274,7 @@ public class dynamicTable078 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nFrequency: "+freq+" ("+(int)freq+") "+"\nDifficulty: "+difficulty+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nAre we winning? "+CalculatePercentageOfOnes()+"\nFrequency: "+freq+" ("+(int)freq+") "+"\nDifficulty: "+difficulty+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+targetCloseness()+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
     }
     private string ActiveMap(){
         string arrayString = "";
