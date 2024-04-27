@@ -12,7 +12,7 @@ public class CreateBoard075 : MonoBehaviour
     public float gfreq => freq;    
     [SerializeField] [Range(15,50)] public int rows = 30;
     [SerializeField] [Range(15,50)] public int columns = 30;
-    [SerializeField] [Range(0.01f,0.1f)] private float difficulty = 0.03f;
+    [SerializeField] [Range(0.01f,0.99f)] private float difficulty = 0.03f;
     public bool randomScale = false;
     [Header("Target Settings")]
     public bool TargetRun = false;

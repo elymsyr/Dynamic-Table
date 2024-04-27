@@ -6,8 +6,9 @@ public class AStar : MonoBehaviour
     public Material selectedRoad;
     public Material pathObjects;
     public Material wallDetected;
-    private float mean = 48;
-    private float scale = 1;
+    public Material firstNode;
+    public float mean = 26;
+    public float scale = 0.1f;
     private int rowColumns => (int)(mean/scale);
     public GameObject cellPrefab;
     public Transform[,] nodes;
@@ -15,9 +16,12 @@ public class AStar : MonoBehaviour
     public Transform target;
     private Vector3 lastPos = new Vector3(0f,0f,0f);
     public bool pathFinder = true;
+    private List<Transform> path;
+    public List<Transform> getPath => path;
 
     void Start()
     {
+        path = new List<Transform>();
         if(pathFinder){initPathFinder();}
     }
 
@@ -28,7 +32,7 @@ public class AStar : MonoBehaviour
     }
 
     private void Update(){
-        if(Vector3.Distance(lastPos,product.localPosition)>1f && pathFinder){
+        if(pathFinder){ // Vector3.Distance(lastPos,product.localPosition)>0.5f && 
             lastPos = product.localPosition;
             PathFinder(getPoint(product), getPoint(target));
         }
@@ -36,16 +40,23 @@ public class AStar : MonoBehaviour
 
     public void PathFinder(Transform startnode, Transform targetNode){
         resetNodeAll(targetNode);
-        List<Transform> path = FindPath(startnode, targetNode);
-        if (path != null && path.Count > 0)
+        List<Transform> first_path = new List<Transform>();
+        first_path = FindPath(startnode, targetNode);
+        if (first_path != null && first_path.Count > 0)
         {
-            Transform firstNode = path[0];
+            path.Clear();
+            for(int i = 5;i<first_path.Count-2;i++){
+                if(i%4 == 0){
+                    path.Add(first_path[i]);
+                }
+            }
             colorRoad(path);
         }
         else
         {
             Debug.Log("No path found.");
         }
+        
     }
 
     public void colorRoad(List<Transform> path){
@@ -54,7 +65,7 @@ public class AStar : MonoBehaviour
         }
     }
 
-    private void changeMaterial(Transform node, Material selected){
+    public void changeMaterial(Transform node, Material selected){
         Renderer renderer = node.GetComponent<Renderer>();
         if (renderer != null)
         {
@@ -63,17 +74,24 @@ public class AStar : MonoBehaviour
     }
 
     private void createPathObjects(){
+        // for (int x = 0; x < rowColumns; x++)
+        // {
+        //     for (int y = 0; y < rowColumns; y++)
+        //     {
+        //         Vector3 cellPosition = new Vector3(x*scale, 0, y*scale);
+        //         GameObject cellObject = Instantiate(cellPrefab, cellPosition, Quaternion.identity);
+        //         cellObject.transform.parent = transform;
+        //         nodes[x, y] = cellObject.transform;
+        //     }
+        // }
+        // transform.localPosition = new Vector3(150.339996f,-27.4599991f,35.8800011f);
         for (int x = 0; x < rowColumns; x++)
         {
             for (int y = 0; y < rowColumns; y++)
             {
-                Vector3 cellPosition = new Vector3(x*scale, 0, y*scale);
-                GameObject cellObject = Instantiate(cellPrefab, cellPosition, Quaternion.identity);
-                cellObject.transform.parent = transform;
-                nodes[x, y] = cellObject.transform;
+                nodes[x, y] = transform.GetChild(x * rowColumns + y);
             }
         }
-        transform.localPosition = new Vector3(118f,-326,102.099998f);
     }
 
     private List<Transform> GetSurroundingTransforms(int x, int y)
@@ -154,7 +172,9 @@ public class AStar : MonoBehaviour
                     {
                         continue;
                     }
-                    float newMovementCostToNeighbor = currentNode.GetComponent<Node>().setgCost(neighbor) + GetDistance(currentNode, neighbor);
+
+                    float newMovementCostToNeighbor = currentNode.GetComponent<Node>().setgCost(neighbor) + GetDistance(currentNode, neighbor); 
+
                     if (newMovementCostToNeighbor < neighbor.GetComponent<Node>().gCost || !openSet.Contains(neighbor))
                     {
                         neighbor.GetComponent<Node>().gCost = newMovementCostToNeighbor;

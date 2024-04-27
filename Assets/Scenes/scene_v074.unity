@@ -195,7 +195,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 4f64acf5c1f2a124da8bb542f763128a, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 9a9902a959fecd14880ab74b120b531a, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 2
   m_BehaviorName: Dynamic Table
@@ -242,7 +242,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 400
+  MaxStep: 600
   showUI: 1
   randomTableSize: 0
   text: {fileID: 1482516762}

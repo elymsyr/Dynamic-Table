@@ -10,27 +10,39 @@ using Unity.VisualScripting;
 
 public class dynamicTable08 : Agent
 {
+    [Header("UI")]
+    [SerializeField] private bool showUI = false;
+    [SerializeField] private GameObject text;
+    [Header("Target Run")]
+    [SerializeField] public bool targetMovement = false;
+    [SerializeField] public float getTargetSpeed => customTargetSpeed;
+    [SerializeField] public float customTargetSpeed = 6f;
+    [Header("Maze")]
+    [SerializeField] private bool maze = false;
+    [SerializeField] private bool setDifficulty = false;
+    [SerializeField] [Range(0f, 0.99f)]private float MazeDifficulty = 0.2f;
+    public Transform firstNode;
+    [Header("Set")]
+    [SerializeField] private GameObject pathfinder;
+    [SerializeField] private GameObject product;
+    [SerializeField] private GameObject target;
+    [Range(0f,15f)] public float MoveSpeed = 12f;
     private int win = 0;
     private int winState = 0;
     private Queue<int> gameStates = new Queue<int>();
-    [SerializeField] private bool showUI = false;
-    [SerializeField] private int RowsNColumns = 22;
-    [SerializeField] private GameObject text;
-    [SerializeField] private GameObject product;
-    [SerializeField] private GameObject target;
-    [SerializeField] private float freq = 250;
+    private AStar AStar;
+    private int RowsNColumns = 22;
     private float closeness = 0;
     private float scale = 4f; 
     private TextMeshPro ui;
     private float directionPoint = 0;
-    private int rows = 40;
-    private int columns = 40;
+    private int rows = 22;
+    private int columns = 22;
     private Transform[,] boxesArray;
     private Vector3[,] boxesLoc;
-    // private float[] wallBorders = {-26,25,25,-26};
-    private float[] wallBorders = {-15.2f,14.2f,14.2f,-15.2f};
+    private float[] wallBorders = {14.2f,-15.2f,14.2f,-15.2f};
+    public float[] getBorders => wallBorders;
     private int size = 8;
-    [Range(0f,15f)] public float MoveSpeed = 12f;
     private Transform[] activeArray;
     private Rigidbody productRigidbody;
     private List<Tuple<int, int>> specifiedPoints = new List<Tuple<int, int>>(){new Tuple<int, int>(0, 0),new Tuple<int, int>(0, 1),new Tuple<int, int>(1, 0),new Tuple<int, int>(2, 0),new Tuple<int, int>(0, 2),new Tuple<int, int>(0, 5),new Tuple<int, int>(0, 6),new Tuple<int, int>(0, 7),new Tuple<int, int>(1, 7),new Tuple<int, int>(2, 7),new Tuple<int, int>(5, 0),new Tuple<int, int>(6, 0),new Tuple<int, int>(7, 0),new Tuple<int, int>(7, 1),new Tuple<int, int>(7, 2),new Tuple<int, int>(7, 5),new Tuple<int, int>(7, 6),new Tuple<int, int>(7, 7),new Tuple<int, int>(6, 7),new Tuple<int, int>(5, 7),};
@@ -38,9 +50,16 @@ public class dynamicTable08 : Agent
     private StatsRecorder recorder;
     private int lastStep = 0;
     private float heighpoint;
+    private CreateBoard08 Labyrynt;
 
     void Awake()
     {
+        AStar = pathfinder.GetComponent<AStar>();
+        Labyrynt = transform.GetComponent<CreateBoard08>();
+        Labyrynt.wallBorders = wallBorders;
+        if(maze){
+            Labyrynt.CreateMaze();
+        }
         rows = RowsNColumns;
         columns = RowsNColumns;
         productClass = product.GetComponent<productCollision08>();
@@ -103,13 +122,40 @@ public class dynamicTable08 : Agent
                 Debug.Log("Null child founded!");
             }
         }
-        if (!productClass.triggered){
+        // if (!productClass.triggered){
+        //     if(maze && AStar.getPath != null && AStar.getPath.Count > 0){
+        //         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(AStar.getPath[0].transform.localPosition.x, 0f, AStar.getPath[0].transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
+        //     }
+        //     else{
+        //         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(target.transform.localPosition.x, 0f, target.transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
+        //     }
+        //     closeness = shrunk(targetCloseness(), min:0.001f, max:30, newMin:1, newMax:10);
+        //     heighpoint = Math.Abs(product.transform.localPosition.y - 6.1f);
+        //     if(heighpoint<0.1f){heighpoint=0.1f;}
+        //     float speed = productRigidbody.velocity.magnitude;
+        //     if(directionPoint<0.4f && directionPoint>0){directionPoint*=-1;}
+        //     // else if (directionPoint > 0.85f){directionPoint = 1;}
+        //     if(speed < 0.1f){speed = 0.1f;}
+        //     float reward = ((directionPoint*speed*speed)-heighpoint)/closeness;
+        //     AddReward(shrunk(reward, reward_state:true));
+        // }
+        if(!productClass.triggered){
             directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
-            closeness = shrunk(targetCloseness(), min:0.001f, max:30, newMin:0, newMax:0.5f);
-            heighpoint = Math.Abs(product.transform.localPosition.y - 6.5f);
-            float speed = shrunk(Math.Abs(productRigidbody.velocity.magnitude - 7f), min:0, max:7, newMin:0, newMax:2);
-            if(directionPoint<0.6/freq && directionPoint>0){directionPoint*=-1;}
-            AddReward(directionPoint+closeness-heighpoint-speed);
+            float heightPoint = product.transform.localPosition.y;
+            float closeness = targetCloseness();
+            float speed = productRigidbody.velocity.magnitude;
+            float adder = MazeDifficulty+0.5f;
+            if(adder < 0.5f){adder = 0.5f;}
+            if(directionPoint<adder && directionPoint>0){directionPoint*=-1;}
+            if(speed < 0.1f){speed = 0.1f;}
+            if(closeness<0.1){closeness = 0.1f;}
+            float reward_increase = directionPoint * speed * speed * 0.0001f;
+            float reward_decrease = (float)Math.Pow(closeness, 0.1f);
+            float reward = reward_increase / reward_decrease;
+            if(directionPoint>=0){
+                reward += heightPoint*0.0001f*0.03f;
+            }
+            AddReward(reward);            
         }
         if (showUI)
         {
@@ -128,22 +174,27 @@ public class dynamicTable08 : Agent
     
     public override void OnEpisodeBegin()
     {
+        if(!setDifficulty){
+            if(MazeDifficulty > 0.75f){MazeDifficulty = 0.75f;}
+            else if(MazeDifficulty < 0.1f){MazeDifficulty = 0.1f;}
+        }
+        MaxStep = (int)(250f+ MazeDifficulty*100);
+        if(maze && (UnityEngine.Random.Range(71f,90f)-MazeDifficulty*100)%CompletedEpisodes < 3){
+            Labyrynt.SetMaze(MazeDifficulty);
+        }
         gameStates.Enqueue(winState);
         if(gameStates.Count > 500){
             gameStates.Dequeue();
         }
         winState = 0;
-        MaxStep = (int)(200f+freq/2);
-        if (freq > 500){
-            freq = 500;
-        }
-        else if(freq < 1){
-            freq = 1;
-        }
         recorder.Add("Custom/Win Percentage of Last 500 Episodes",CalculatePercentageOfOnes(),StatAggregationMethod.Average);
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
-        recorder.Add("Custom/Freq",freq,StatAggregationMethod.Average);
+        recorder.Add("Custom/Maz Step",MaxStep,StatAggregationMethod.Average);
+        if(maze){
+            recorder.Add("Custom/Maze Difficulty",MazeDifficulty,StatAggregationMethod.Average);
+            recorder.Add("Custom/Number of Walls",Labyrynt.wallNumber,StatAggregationMethod.Average);
+        }
         product.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         productRigidbody.velocity = Vector3.zero;
         activeArray = new Transform[size*size-specifiedPoints.Count];
@@ -166,15 +217,15 @@ public class dynamicTable08 : Agent
     }     
 
     public void triggerReset(){
-        freq += 0.7f;
-        AddReward(-2f);
+        if(!setDifficulty){MazeDifficulty -= 0.075f;}
+        AddReward(-0.5f); //changed
         EndEpisode();
     }
     
     public void winReset(){
         win++;
+        if(!setDifficulty){MazeDifficulty += 0.07f;}
         winState = 1;
-        freq -= 500/freq;
         AddReward(2f);
         EndEpisode();
     }
@@ -193,9 +244,20 @@ public class dynamicTable08 : Agent
             }
         }
         sensor.AddObservation(product.transform.localPosition);
-        sensor.AddObservation(target.transform.localPosition);
+        if(!maze){
+            sensor.AddObservation(target.transform.localPosition);
+        }
+        else{
+            if(AStar.getPath != null && AStar.getPath.Count > 0){
+                sensor.AddObservation(AStar.getPath[0].localPosition);
+                firstNode = AStar.getPath[0];
+                }
+            else{sensor.AddObservation(target.transform.localPosition);}
+        }
+
         sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
+        var item = GetObservations();
     }
 
     private Vector3 randomPos(){
@@ -208,7 +270,7 @@ public class dynamicTable08 : Agent
         do{
             target_start = randomPos();
             product_start = randomPos();
-        }while(Vector3.Distance(target_start, product_start) < 6f);
+        }while(Vector3.Distance(target_start, product_start) < 25f);
         target.transform.localPosition = target_start;
         product.transform.localPosition = product_start;
     }
@@ -225,7 +287,7 @@ public class dynamicTable08 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nAre we winning? "+CalculatePercentageOfOnes()+"\nFrequency: "+freq+" ("+(int)freq+") "+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nAre we winning? "+CalculatePercentageOfOnes()+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
     }
 
     private string ActiveMap(){

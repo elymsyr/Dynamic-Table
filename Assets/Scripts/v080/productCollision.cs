@@ -1,9 +1,14 @@
+using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class productCollision08 : MonoBehaviour
 {
     [SerializeField] private GameObject target;
     [SerializeField] private GameObject receiverObject;
+    [SerializeField] private GameObject receiverObjectPath;
+    [SerializeField] private Material firstContactObject;
     public bool triggered = false;
 
     private void OnTriggerEnter(Collider other)
