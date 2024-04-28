@@ -21,7 +21,6 @@ public class dynamicTable08 : Agent
     [SerializeField] private bool maze = false;
     [SerializeField] private bool setDifficulty = false;
     [SerializeField] [Range(0f, 0.99f)]private float MazeDifficulty = 0.2f;
-    public Transform firstNode;
     [Header("Set")]
     [SerializeField] private GameObject pathfinder;
     [SerializeField] private GameObject product;
@@ -62,7 +61,7 @@ public class dynamicTable08 : Agent
         }
         rows = RowsNColumns;
         columns = RowsNColumns;
-        productClass = product.GetComponent<productCollision08>();
+        productClass = product.GetComponent<productCollision08>(); 
         recorder = Academy.Instance.StatsRecorder;
 
         if (text != null)
@@ -122,41 +121,41 @@ public class dynamicTable08 : Agent
                 Debug.Log("Null child founded!");
             }
         }
-        // if (!productClass.triggered){
-        //     if(maze && AStar.getPath != null && AStar.getPath.Count > 0){
-        //         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(AStar.getPath[0].transform.localPosition.x, 0f, AStar.getPath[0].transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
-        //     }
-        //     else{
-        //         directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(target.transform.localPosition.x, 0f, target.transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
-        //     }
-        //     closeness = shrunk(targetCloseness(), min:0.001f, max:30, newMin:1, newMax:10);
-        //     heighpoint = Math.Abs(product.transform.localPosition.y - 6.1f);
-        //     if(heighpoint<0.1f){heighpoint=0.1f;}
-        //     float speed = productRigidbody.velocity.magnitude;
-        //     if(directionPoint<0.4f && directionPoint>0){directionPoint*=-1;}
-        //     // else if (directionPoint > 0.85f){directionPoint = 1;}
-        //     if(speed < 0.1f){speed = 0.1f;}
-        //     float reward = ((directionPoint*speed*speed)-heighpoint)/closeness;
-        //     AddReward(shrunk(reward, reward_state:true));
-        // }
-        if(!productClass.triggered){
-            directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
-            float heightPoint = product.transform.localPosition.y;
-            float closeness = targetCloseness();
-            float speed = productRigidbody.velocity.magnitude;
-            float adder = MazeDifficulty+0.5f;
-            if(adder < 0.5f){adder = 0.5f;}
-            if(directionPoint<adder && directionPoint>0){directionPoint*=-1;}
-            if(speed < 0.1f){speed = 0.1f;}
-            if(closeness<0.1){closeness = 0.1f;}
-            float reward_increase = directionPoint * speed * speed * 0.0001f;
-            float reward_decrease = (float)Math.Pow(closeness, 0.1f);
-            float reward = reward_increase / reward_decrease;
-            if(directionPoint>=0){
-                reward += heightPoint*0.0001f*0.03f;
+
+        if (!productClass.triggered){
+            if(maze && AStar.getPath != null && AStar.getPath.Count > 0){
+                directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(AStar.getPath[0].transform.localPosition.x, 0f, AStar.getPath[0].transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
             }
-            AddReward(reward);            
+            else{
+                directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (new Vector3(target.transform.localPosition.x, 0f, target.transform.localPosition.z) - new Vector3(product.transform.localPosition.x, 0f, product.transform.localPosition.z)).normalized);
+            }
+            closeness = shrunk(targetCloseness(), min:0.001f, max:30, newMin:1, newMax:10);
+            heighpoint = Math.Abs(product.transform.localPosition.y - 6.1f);
+            if(heighpoint<0.1f){heighpoint=0.1f;}
+            float speed = productRigidbody.velocity.magnitude;
+            if(directionPoint<0.5f && directionPoint>0){directionPoint*=-1;}
+            if(speed < 0.1f){speed = 0.1f;}
+            float reward = ((directionPoint*speed*speed)-heighpoint)/closeness;
+            AddReward(shrunk(reward, reward_state:true));
         }
+
+        // if(!productClass.triggered){
+        //     directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
+        //     float heightPoint = product.transform.localPosition.y;
+        //     float closeness = targetCloseness();
+        //     float speed = productRigidbody.velocity.magnitude;
+        //     if(directionPoint<0.6f && directionPoint>0 && !maze){directionPoint*=-1;}
+        //     if(speed < 0.1f){speed = 0.1f;}
+        //     if(closeness<0.1){closeness = 0.1f;}
+        //     float reward_increase = directionPoint * speed * speed * 0.0001f;
+        //     float reward_decrease = (float)Math.Pow(closeness, 0.1f);
+        //     float reward = reward_increase / reward_decrease;
+        //     if(directionPoint>=0){
+        //         reward += heightPoint*0.0001f*0.3f;
+        //     }
+        //     AddReward(reward);            
+        // }
+        
         if (showUI)
         {
             updateUI();
@@ -249,19 +248,17 @@ public class dynamicTable08 : Agent
         }
         else{
             if(AStar.getPath != null && AStar.getPath.Count > 0){
-                sensor.AddObservation(AStar.getPath[0].localPosition);
-                firstNode = AStar.getPath[0];
+                sensor.AddObservation(gameObject.transform.InverseTransformPoint(AStar.getPath[0].position));
                 }
             else{sensor.AddObservation(target.transform.localPosition);}
         }
 
         sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
-        var item = GetObservations();
     }
 
     private Vector3 randomPos(){
-        return new Vector3(UnityEngine.Random.Range(wallBorders[0]-(scale/2 + 0.1f), wallBorders[1]+(scale/2 + 0.1f)), UnityEngine.Random.Range(6f,7f), UnityEngine.Random.Range(wallBorders[2]-(scale/2 + 0.1f), wallBorders[3]+(scale/2 + 0.1f)));
+        return new Vector3(UnityEngine.Random.Range(wallBorders[0]-scale, wallBorders[1]+scale), UnityEngine.Random.Range(6f,7f), UnityEngine.Random.Range(wallBorders[2]-scale, wallBorders[3]+scale));
     }     
 
     public void ObjectPos(){

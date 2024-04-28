@@ -991,7 +991,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: b655a979754ecbe45ba31a6658c7bf8d, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 77f69a04adc43a84dbd13f1164f7857a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: Dynamic Table
@@ -1011,8 +1011,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a41a04494f54142b165173f104ecdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Maze: 0
-  freq: 30
+  Maze: 1
+  freq: 1
   rows: 30
   columns: 30
   difficulty: 0.4

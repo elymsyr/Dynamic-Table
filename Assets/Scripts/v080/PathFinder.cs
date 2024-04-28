@@ -6,7 +6,6 @@ public class AStar : MonoBehaviour
     public Material selectedRoad;
     public Material pathObjects;
     public Material wallDetected;
-    public Material firstNode;
     public float mean = 26;
     public float scale = 0.1f;
     private int rowColumns => (int)(mean/scale);
@@ -32,7 +31,7 @@ public class AStar : MonoBehaviour
     }
 
     private void Update(){
-        if(pathFinder){ // Vector3.Distance(lastPos,product.localPosition)>0.5f && 
+        if(pathFinder && Vector3.Distance(lastPos,product.localPosition)>1.5f){ 
             lastPos = product.localPosition;
             PathFinder(getPoint(product), getPoint(target));
         }
@@ -45,7 +44,7 @@ public class AStar : MonoBehaviour
         if (first_path != null && first_path.Count > 0)
         {
             path.Clear();
-            for(int i = 5;i<first_path.Count-2;i++){
+            for(int i = 12;i<first_path.Count-8;i++){
                 if(i%4 == 0){
                     path.Add(first_path[i]);
                 }
