@@ -115,15 +115,13 @@ import matplotlib.pyplot as plt
 from random import randint
 X=[]
 Y=[]
-n = 500
+n = 0.05
 def decrease(n):
-  newn = n - 500/n
+  newn = n + n * 0.05
   return newn
-for d in range(1000):
+for d in range(5000):
   X.append(d)
   Y.append(n)
   n = decrease(n)
-  if n <= 0:
-      break
 plt.plot(X, Y)
 plt.show()

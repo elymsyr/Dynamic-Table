@@ -55,17 +55,17 @@ public class AStar081 : MonoBehaviour
     }
 
     public void colorRoad(List<Transform> path){
-        foreach(Transform node in nodes){
-            if(path.Contains(node)){changeMaterial(node, selectedRoad);}
-        }
+        // foreach(Transform node in nodes){
+        //     if(path.Contains(node)){changeMaterial(node, selectedRoad);}
+        // }
     }
 
     public void changeMaterial(Transform node, Material selected){
-        Renderer renderer = node.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.material = selected;
-        }
+        // Renderer renderer = node.GetComponent<Renderer>();
+        // if (renderer != null)
+        // {
+        //     renderer.material = selected;
+        // }
     }
 
     private void createPathObjects(){

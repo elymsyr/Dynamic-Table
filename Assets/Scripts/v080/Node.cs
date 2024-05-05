@@ -6,7 +6,7 @@ public class Node : MonoBehaviour
     public float gCost = 999999f;
     public float hCost = 999999f;
     public bool wallFlag = false;
-    public float exposure = 2.5f;
+    private float rayL = 2.9f;
     public LayerMask layerMask;
     public float fCost => gCost + hCost;
     public List<Transform> neighbors;
@@ -34,11 +34,20 @@ public class Node : MonoBehaviour
             Quaternion.Euler(0, 45, 0) * new Vector3(-1, 0, 1).normalized,
             Quaternion.Euler(0, 45, 0) * new Vector3(1, 0, -1).normalized,
             Quaternion.Euler(0, 45, 0) * new Vector3(-1, 0, -1).normalized,
+            // Additional directions
+            Quaternion.Euler(0, 22.5f, 0) * Vector3.forward,
+            Quaternion.Euler(0, 22.5f, 0) * Vector3.back,
+            Quaternion.Euler(0, 22.5f, 0) * Vector3.left,
+            Quaternion.Euler(0, 22.5f, 0) * Vector3.right,
+            Quaternion.Euler(0, 22.5f, 0) * new Vector3(1, 0, 1).normalized,
+            Quaternion.Euler(0, 22.5f, 0) * new Vector3(-1, 0, 1).normalized,
+            Quaternion.Euler(0, 22.5f, 0) * new Vector3(1, 0, -1).normalized,
+            Quaternion.Euler(0, 22.5f, 0) * new Vector3(-1, 0, -1).normalized,
         };
         foreach (Vector3 direction in directions)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, direction, out hit, exposure, layerMask))
+            if (Physics.Raycast(transform.position, direction, out hit, rayL, layerMask))
             {
                 wallFlag = true;
                 break;

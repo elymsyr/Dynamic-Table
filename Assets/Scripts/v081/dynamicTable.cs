@@ -7,18 +7,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using System.Collections.ObjectModel;
 
 public class dynamicTable081 : Agent
 {
     [Header("UI")]
     [SerializeField] private bool showUI = false;
     [SerializeField] private GameObject text;
+    
     [Header("Target Run")]
     [SerializeField] public bool targetMovement = false;
     [SerializeField] public float getTargetSpeed => customTargetSpeed;
     [SerializeField] public float customTargetSpeed = 6f;
     [Header("Maze")]
     [SerializeField] private bool maze = false;
+    public Material focusTarget;
     [SerializeField] private bool setDifficulty = false;
     [SerializeField] [Range(0f, 0.99f)]private float MazeDifficulty = 0.2f;
     [Header("Set")]
@@ -196,11 +199,11 @@ public class dynamicTable081 : Agent
     public override void OnEpisodeBegin()
     {
         if(!setDifficulty){
-            if(MazeDifficulty > 0.75f){MazeDifficulty = 0.75f;}
-            else if(MazeDifficulty < 0.1f){MazeDifficulty = 0.1f;}
+            if(MazeDifficulty > 0.5f){MazeDifficulty = 0.5f;}
+            else if(MazeDifficulty < 0.05f){MazeDifficulty = 0.05f;}
         }
-        MaxStep = (int)(250f+ MazeDifficulty*100);
-        if(maze && (UnityEngine.Random.Range(71f,90f)-MazeDifficulty*100)%CompletedEpisodes < 3){
+        MaxStep = (int)(400); // 300f+ MazeDifficulty*100
+        if(CompletedEpisodes%5 == 0){ // maze && (int)(MazeDifficulty*10+1)%(CompletedEpisodes+1) < 3
             Labyrynt.SetMaze(MazeDifficulty);
         }
         gameStates.Enqueue(winState);
@@ -238,14 +241,14 @@ public class dynamicTable081 : Agent
     }     
 
     public void triggerReset(){
-        if(!setDifficulty){MazeDifficulty -= 0.075f;}
-        AddReward(-2f);
+        if(!setDifficulty){MazeDifficulty -= 0.065f;}
+        AddReward(-4f);
         EndEpisode();
     }
     
     public void winReset(){
         win++;
-        if(!setDifficulty){MazeDifficulty += 0.07f;}
+        if(!setDifficulty){MazeDifficulty += 0.065f;}
         winState = 1;
         AddReward(2f);
         EndEpisode();
@@ -265,13 +268,15 @@ public class dynamicTable081 : Agent
             }
         }
         sensor.AddObservation(product.transform.localPosition);
+
         if(!maze){
             sensor.AddObservation(target.transform.localPosition);
         }
         else{
             if(AStar.getPath != null && AStar.getPath.Count > 0){
                 sensor.AddObservation(gameObject.transform.InverseTransformPoint(AStar.getPath[0].position));
-                }
+                // AStar.changeMaterial(AStar.getPath[0], focusTarget);
+            }
             else{sensor.AddObservation(target.transform.localPosition);}
         }
 
@@ -321,7 +326,21 @@ public class dynamicTable081 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nAre we winning? "+CalculatePercentageOfOnes()+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nTarget Location: "+TargetLocation()+"\nAre we winning? "+CalculatePercentageOfOnes()+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+win+"\nActive Parts Map: \n"+ActiveMap();
+    }
+
+    private string TargetLocation(){
+        ReadOnlyCollection<float> observation = GetObservations();
+        if(observation.Count == 0){
+            return "         ";
+        }
+        else{
+            string str = observation.Count+": ";
+            str +=observation[47] + " | ";
+            str +=observation[48] + " | ";
+            str +=observation[49];    
+            return str;
+        }
     }
 
     private string ActiveMap(){
