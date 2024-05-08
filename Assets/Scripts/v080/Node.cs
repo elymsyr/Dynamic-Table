@@ -6,11 +6,12 @@ public class Node : MonoBehaviour
     public float gCost = 999999f;
     public float hCost = 999999f;
     public bool wallFlag = false;
-    private float rayL = 2.9f;
+    private float rayL = 10f;
     public LayerMask layerMask;
     public float fCost => gCost + hCost;
     public List<Transform> neighbors;
     public Transform parent;
+    public float closestHitDistance = 0;
 
     public void CheckCollide(){
         Vector3[] directions = {
@@ -49,17 +50,25 @@ public class Node : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, direction, out hit, rayL, layerMask))
             {
-                wallFlag = true;
-                break;
+                if(hit.distance < 2.9f){
+                    wallFlag = true;
+                    closestHitDistance = 0;
+                    break;
+                }
+                else if (hit.distance < closestHitDistance)
+                {
+                    closestHitDistance = hit.distance;
+                }
             }
         }
     }
 
-    public void resetNode(Transform target){
+    public void resetNode(Transform target, float distanceMul){
         wallFlag = false;
         CheckCollide();
         if(!wallFlag){
-            hCost = Vector3.Distance(transform.localPosition, target.localPosition);
+            hCost = Vector3.Distance(transform.localPosition, target.localPosition) + (distanceMul*(10-closestHitDistance));
+            Debug.Log(hCost+" = "+Vector3.Distance(transform.localPosition, target.localPosition)+" + ("+distanceMul+" * (10 - "+closestHitDistance+"))");
         }
         else{hCost = 999999f;}
         gCost = 999999f;
