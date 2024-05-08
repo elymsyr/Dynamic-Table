@@ -12,36 +12,28 @@ public class AStar090 : MonoBehaviour
     private int rowColumns => (int)(mean/scale);
     public Transform[,] nodes;
     public Transform product;
-    public Transform target;
     public Vector3 lastPos = new Vector3(0f,0f,0f);
     public bool pathFinder = true;
+    private List<Transform> path;
 
     public void initPathFinder(){
         nodes = new Transform[rowColumns, rowColumns];
+        path = new List<Transform>();
         createPathObjects();
         initializeNeighborsAll();
     }
 
-    public List<Transform> PathFinder(Transform startnode, Transform targetNode, List<Transform> pathNodes){
-        // resetNodeAll(targetNode);
-        List<Transform> first_path = new List<Transform>();
-        first_path = FindPath(startnode, targetNode);
-        if (first_path != null && first_path.Count > 0)
-        {
-            pathNodes.Clear();
-            for(int i = 9;i<first_path.Count-5;i++){
-                if(i%4 == 0){
-                    pathNodes.Add(first_path[i]);
-                }
-            }
-            colorRoad(pathNodes);
-        }
-        return pathNodes;
+    public Transform PathFinder(Transform startnode, Transform targetNode){
+
+        path = FindPath(startnode, targetNode);
+        colorRoad();
+        if(path.Count>0 && path[10] != null){return path[10];}
+        else{return null;}
     }
 
-    public void colorRoad(List<Transform> path){
-        foreach(Transform node in nodes){
-            if(path.Contains(node)){changeMaterial(node, selectedRoad);}
+    public void colorRoad(){
+        foreach(Transform node in path){
+            changeMaterial(node, selectedRoad);
         }
     }
 
@@ -92,12 +84,12 @@ public class AStar090 : MonoBehaviour
         }
     }
 
-    public void resetNodeAll(Transform startNode, float distanceMul=1.0f){
+    public void resetNodeAll(Transform startNode){
         for (int x = 0; x < rowColumns; x++)
         {
             for (int y = 0; y < rowColumns; y++)
             {
-                nodes[x,y].GetComponent<Node>().resetNode(startNode, distanceMul);
+                nodes[x,y].GetComponent<Node>().resetNode(startNode);
                 changeMaterial(nodes[x,y], pathObjects);
             }
         }
@@ -194,51 +186,5 @@ public class AStar090 : MonoBehaviour
         }
         return pointNode;
     }
-
-    public bool checkPoint(Transform point){
-        int n = 10;
-        // Create lists to hold the closest objects and their distances
-        List<Transform> closestNodes = new List<Transform>();
-        List<float> closestDistances = new List<float>();
-
-        // Initialize the lists with dummy values
-        for (int i = 0; i < n; i++)
-        {
-            closestNodes.Add(null);
-            closestDistances.Add(float.MaxValue);
-        }
-
-        foreach(Transform node in nodes)
-        {
-            float newDist = GetDistance(node, point);
-            // Check if the new distance is smaller than any of the distances in the list
-            for (int i = 0; i < n; i++)
-            {
-                if (newDist < closestDistances[i])
-                {
-                    // Shift elements to the right to make space for the new distance
-                    for (int j = n - 1; j > i; j--)
-                    {
-                        closestDistances[j] = closestDistances[j - 1];
-                        closestNodes[j] = closestNodes[j - 1];
-                    }
-                    // Insert the new distance and node at the appropriate position
-                    closestDistances[i] = newDist;
-                    closestNodes[i] = node;
-                    break; // Stop searching for the next position
-                }
-            }
-        }
-        foreach(Transform node in closestNodes){
-            changeMaterial(node, test);
-        }
-
-        foreach(Transform node in closestNodes){
-            if(node.GetComponent<Node>().wallFlag){
-                return false;
-            }
-        }
-        return true;
-    }    
 
 }

@@ -18,7 +18,6 @@ public class dynamicTable090 : Agent
     [SerializeField] private bool maze = false;
     [SerializeField] [Range(0,9)]private int mazeNumber = 0;
     [SerializeField] private GameObject mazesParent;
-    [SerializeField] [Range(0f,4f)] private float distanceMul = 1;
     private Vector3 mazeLocationSet = new Vector3(158f,6f,1.25f);
     private List<Transform> mazes;
     private GameObject randomMaze => mazes[UnityEngine.Random.Range(0, mazes.Count)].gameObject;
@@ -27,6 +26,8 @@ public class dynamicTable090 : Agent
     [SerializeField] private GameObject pathfinder;
     [SerializeField] private GameObject product;
     [SerializeField] private GameObject target;
+    public LayerMask layerMask;
+    public Material test;
     [Range(0f,15f)] public float MoveSpeed = 12f;
 
     private int winState = 0;
@@ -54,14 +55,13 @@ public class dynamicTable090 : Agent
     private List<float> observation; // RAY
     private RayPerceptionOutput.RayOutput[] rayOutputs; // RAY
     private RayPerceptionSensorComponent3D rayPerceptionSensor; // RAY
-    private List<Transform> path;
+    private Transform pathFirstNode = null;
 
 
     void Awake()
     {
         mazes = new List<Transform>();
         if (pathfinder != null){AStar = pathfinder.GetComponent<AStar090>();}
-        path = new List<Transform>();
         if(AStar.pathFinder){AStar.initPathFinder();}
 
         for (int i = 0; i < mazesParent.transform.childCount; i++)
@@ -107,9 +107,13 @@ public class dynamicTable090 : Agent
     }
 
     void Update(){
-        if(AStar.pathFinder && Vector3.Distance(AStar.lastPos,product.transform.localPosition)>1.5f){ 
+        if(AStar.pathFinder && Vector3.Distance(AStar.lastPos,product.transform.localPosition)>1f){ 
             AStar.lastPos = product.transform.localPosition;
-            path = AStar.PathFinder(AStar.getPoint(product.transform), AStar.getPoint(target.transform), path);
+            Transform nodeCheck = AStar.PathFinder(AStar.getPoint(product.transform), AStar.getPoint(target.transform));
+            if(nodeCheck != null){
+                pathFirstNode = nodeCheck;
+                AStar.changeMaterial(pathFirstNode, test);
+            }
         }        
     }
 
@@ -143,6 +147,8 @@ public class dynamicTable090 : Agent
             }
         }
         if(!productClass.triggered){
+            if(pathFirstNode != null){directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (gameObject.transform.InverseTransformPoint(pathFirstNode.position) - product.transform.localPosition).normalized);}
+            else{directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);}            
             directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
             float heightPoint = product.transform.localPosition.y;
             float closeness = targetCloseness();
@@ -163,12 +169,12 @@ public class dynamicTable090 : Agent
             updateUI();
         }
         lastStep = StepCount;
-    }   
+    }
     
     public override void OnEpisodeBegin()
     {
         if(selectedMaze!=null){Destroy(selectedMaze);}
-        if(mazeNumber >= 1 && mazeNumber <= 8){selectedMaze = Instantiate(mazes[mazeNumber].gameObject, mazeLocationSet, Quaternion.identity);}
+        if(mazeNumber >= 1 && mazeNumber <= 8){selectedMaze = Instantiate(mazes[mazeNumber-1].gameObject, mazeLocationSet, Quaternion.identity);}
         else if(mazeNumber == 9){Instantiate(randomMaze, mazeLocationSet, Quaternion.identity);}
 
         gameStates.Enqueue(winState);
@@ -183,9 +189,10 @@ public class dynamicTable090 : Agent
         product.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         productRigidbody.velocity = Vector3.zero;
         activeArray = new Transform[size*size-specifiedPoints.Count];
+        
         ObjectPos();
 
-        AStar.resetNodeAll(AStar.getPoint(target.transform), distanceMul);
+        AStar.resetNodeAll(AStar.getPoint(target.transform));
     }
 
     private float CalculatePercentageOfOnes()
@@ -227,21 +234,12 @@ public class dynamicTable090 : Agent
                 sensor.AddObservation(0);
             }
         }
-        sensor.AddObservation(product.transform.localPosition);
+        if(pathFirstNode != null){sensor.AddObservation(gameObject.transform.InverseTransformPoint(pathFirstNode.position));}
+        else{sensor.AddObservation(target.transform.localPosition);}
+        
 
-        if(!maze){
-            sensor.AddObservation(target.transform.localPosition);
-        }
-        else{
-            if(path != null && path.Count > 0){
-                sensor.AddObservation(gameObject.transform.InverseTransformPoint(path[0].position));
-                // AStar.changeMaterial(path[0], focusTarget);
-            }
-            else{sensor.AddObservation(target.transform.localPosition);}
-        }
-
-        sensor.AddObservation(targetCloseness());
         sensor.AddObservation(productRigidbody.velocity.magnitude);
+        sensor.AddObservation(directionPoint); // ?
         RayCollect(); // RAY
         sensor.AddObservation(observation); // RAY
     }
@@ -264,14 +262,77 @@ public class dynamicTable090 : Agent
     }     
 
     public void ObjectPos(){
-        Vector3 target_start;
-        Vector3 product_start;
-        do{
-            target_start = randomPos();
-            product_start = randomPos();
-        }while(Vector3.Distance(target_start, product_start) < 6f && AStar.checkPoint(product.transform) && AStar.checkPoint(target.transform));
-        target.transform.localPosition = target_start;
-        product.transform.localPosition = product_start;
+        bool control = false;
+        int nTime = 0;
+        while(!control){
+
+            if(nTime >= 50){
+                if(selectedMaze!=null){Destroy(selectedMaze);}
+            }
+
+            Vector3 target_start;
+            Vector3 product_start;
+            do{
+                target_start = randomPos();
+                product_start = randomPos();
+            }while(Vector3.Distance(target_start, product_start) < 6f);
+            target.transform.localPosition = target_start;
+            product.transform.localPosition = product_start;
+
+            Vector3[] directions = {
+                // Cardinal directions along XZ plane
+                Vector3.forward,
+                Vector3.back,
+                Vector3.left,
+                Vector3.right,
+                // Diagonal directions along XZ plane
+                new Vector3(1, 0, 1).normalized,
+                new Vector3(-1, 0, 1).normalized,
+                new Vector3(1, 0, -1).normalized,
+                new Vector3(-1, 0, -1).normalized,
+                // Secondary directions along XZ plane
+                Quaternion.Euler(0, 45, 0) * Vector3.forward,
+                Quaternion.Euler(0, 45, 0) * Vector3.back,
+                Quaternion.Euler(0, 45, 0) * Vector3.left,
+                Quaternion.Euler(0, 45, 0) * Vector3.right,
+                // Secondary diagonal directions along XZ plane
+                Quaternion.Euler(0, 45, 0) * new Vector3(1, 0, 1).normalized,
+                Quaternion.Euler(0, 45, 0) * new Vector3(-1, 0, 1).normalized,
+                Quaternion.Euler(0, 45, 0) * new Vector3(1, 0, -1).normalized,
+                Quaternion.Euler(0, 45, 0) * new Vector3(-1, 0, -1).normalized,
+                // Additional directions
+                Quaternion.Euler(0, 22.5f, 0) * Vector3.forward,
+                Quaternion.Euler(0, 22.5f, 0) * Vector3.back,
+                Quaternion.Euler(0, 22.5f, 0) * Vector3.left,
+                Quaternion.Euler(0, 22.5f, 0) * Vector3.right,
+                Quaternion.Euler(0, 22.5f, 0) * new Vector3(1, 0, 1).normalized,
+                Quaternion.Euler(0, 22.5f, 0) * new Vector3(-1, 0, 1).normalized,
+                Quaternion.Euler(0, 22.5f, 0) * new Vector3(1, 0, -1).normalized,
+                Quaternion.Euler(0, 22.5f, 0) * new Vector3(-1, 0, -1).normalized,
+            };
+            
+            bool check = true;
+            foreach (Vector3 direction in directions)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(target.transform.position, direction, out hit, 2.5f, layerMask))
+                {
+                    check = false;
+                    break;
+                }
+                if (check){
+                    if (Physics.Raycast(product.transform.position, direction, out hit, 3.2f, layerMask))
+                    {
+                        check = false;
+                        break;
+                    }            
+                }
+            }
+            if(check){control = true;}
+            if(!control){
+                nTime++;
+            }
+        }
     }
 
 

@@ -6,14 +6,14 @@ public class Node : MonoBehaviour
     public float gCost = 999999f;
     public float hCost = 999999f;
     public bool wallFlag = false;
-    private float rayL = 10f;
+    private float rayL = 2.8f;
     public LayerMask layerMask;
     public float fCost => gCost + hCost;
     public List<Transform> neighbors;
     public Transform parent;
     public float closestHitDistance = 0;
 
-    public void CheckCollide(){
+    public bool CheckCollide(){
         Vector3[] directions = {
             // Cardinal directions along XZ plane
             Vector3.forward,
@@ -50,28 +50,20 @@ public class Node : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, direction, out hit, rayL, layerMask))
             {
-                if(hit.distance < 2.9f){
-                    wallFlag = true;
-                    closestHitDistance = 0;
-                    break;
-                }
-                else if (hit.distance < closestHitDistance)
-                {
-                    closestHitDistance = hit.distance;
-                }
+                wallFlag = true;
+                return false;
             }
         }
+        return true;
     }
 
-    public void resetNode(Transform target, float distanceMul){
+    public void resetNode(Transform target){
         wallFlag = false;
-        CheckCollide();
-        if(!wallFlag){
-            hCost = Vector3.Distance(transform.localPosition, target.localPosition) + (distanceMul*(10-closestHitDistance));
-            Debug.Log(hCost+" = "+Vector3.Distance(transform.localPosition, target.localPosition)+" + ("+distanceMul+" * (10 - "+closestHitDistance+"))");
+        if(CheckCollide()){
+            hCost = Vector3.Distance(transform.localPosition, target.localPosition);
         }
-        else{hCost = 999999f;}
-        gCost = 999999f;
+        else{hCost = Mathf.Infinity;}
+        gCost = Mathf.Infinity;
         parent = null;
     }
 
@@ -81,7 +73,7 @@ public class Node : MonoBehaviour
 
     public float setgCost(Transform neighbor){
         gCost = Vector3.Distance(transform.localPosition, neighbor.localPosition);
-        return Vector3.Distance(transform.localPosition, neighbor.localPosition);
+        return gCost;
     }
 
 }

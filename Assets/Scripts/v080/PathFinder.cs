@@ -127,7 +127,7 @@ public class AStar : MonoBehaviour
         {
             for (int y = 0; y < rowColumns; y++)
             {
-                nodes[x,y].GetComponent<Node>().resetNode(startNode, 0);
+                nodes[x,y].GetComponent<Node>().resetNode(startNode);
                 changeMaterial(nodes[x,y], pathObjects);
             }
         }
