@@ -3,12 +3,18 @@ using UnityEngine;
 
 public class AStar090 : MonoBehaviour
 {
+    [SerializeField] private bool TEST = true;
+    public bool TestProperty {
+        get { return TEST; }
+        set { TEST = value; }
+    }
     public Material selectedRoad;
     public Material pathObjects;
     public Material wallDetected;
     public Material test;
     public float mean = 26;
     public float scale = 0.5f;
+    [Range(1,10)] public int chooseNext = 6; 
     private int rowColumns => (int)(mean/scale);
     public Transform[,] nodes;
     public Transform product;
@@ -27,21 +33,25 @@ public class AStar090 : MonoBehaviour
 
         path = FindPath(startnode, targetNode);
         colorRoad();
-        if(path.Count>0 && path[10] != null){return path[10];}
+        if(path.Count>chooseNext && path[chooseNext] != null){return path[chooseNext];}
         else{return null;}
     }
 
     public void colorRoad(){
-        foreach(Transform node in path){
-            changeMaterial(node, selectedRoad);
+        if(TEST){
+            foreach(Transform node in path){
+                changeMaterial(node, selectedRoad);
+            }
         }
     }
 
     public void changeMaterial(Transform node, Material selected){
-        Renderer renderer = node.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.material = selected;
+        if(TEST){
+            Renderer renderer = node.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material = selected;
+        }
         }
     }
 
@@ -100,6 +110,7 @@ public class AStar090 : MonoBehaviour
         List<Transform> openSet = new List<Transform>();
         HashSet<Transform> closedSet = new HashSet<Transform>();
         openSet.Add(start);
+        start.GetComponent<Node>().gCost = 0;
         foreach(Transform node in nodes){
             if(node.GetComponent<Node>().wallFlag){
                 changeMaterial(node, wallDetected);
@@ -112,9 +123,11 @@ public class AStar090 : MonoBehaviour
             Transform currentNode = openSet[0];
             for (int i = 1; i < openSet.Count; i++)
             {
-                if (openSet[i].GetComponent<Node>().fCost < currentNode.GetComponent<Node>().fCost || (openSet[i].GetComponent<Node>().fCost == currentNode.GetComponent<Node>().fCost && openSet[i].GetComponent<Node>().hCost < currentNode.GetComponent<Node>().hCost))
-                {
-                    currentNode = openSet[i];
+                if(!openSet[i].GetComponent<Node>().wallFlag){
+                    if (openSet[i].GetComponent<Node>().fCost < currentNode.GetComponent<Node>().fCost)
+                    {
+                        currentNode = openSet[i];
+                    }
                 }
             }
 
@@ -134,7 +147,7 @@ public class AStar090 : MonoBehaviour
                         continue;
                     }
 
-                    float newMovementCostToNeighbor = currentNode.GetComponent<Node>().setgCost(neighbor) + GetDistance(currentNode, neighbor); 
+                    float newMovementCostToNeighbor = currentNode.GetComponent<Node>().gCost + GetDistance(currentNode, neighbor);
 
                     if (newMovementCostToNeighbor < neighbor.GetComponent<Node>().gCost || !openSet.Contains(neighbor))
                     {
@@ -164,6 +177,16 @@ public class AStar090 : MonoBehaviour
             currentNode = currentNode.GetComponent<Node>().parent;
         }
         path.Reverse();
+        int n = 3;
+        if (n >= path.Count)
+        {
+            path.Clear();
+        }
+        else
+        {
+            int startIndex = path.Count - n;
+            path.RemoveRange(startIndex, n);
+        }        
         return path;
     }
 

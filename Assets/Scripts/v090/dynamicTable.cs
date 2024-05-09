@@ -13,10 +13,13 @@ public class dynamicTable090 : Agent
 {
     [Header("UI")]
     [SerializeField] private bool showUI = false;
+    [SerializeField] private bool TEST = true;
     [SerializeField] private GameObject text;
+
     [Header("Maze")]
     [SerializeField] private bool maze = false;
-    [SerializeField] [Range(0,9)]private int mazeNumber = 0;
+    [SerializeField] [Range(0,9)]private int mazeNumber = 0; // Default : 0 | Can be set for initialized trains.
+    private int lim = 85; // Also set this for initialized trains.
     [SerializeField] private GameObject mazesParent;
     private Vector3 mazeLocationSet = new Vector3(158f,6f,1.25f);
     private List<Transform> mazes;
@@ -29,6 +32,8 @@ public class dynamicTable090 : Agent
     public LayerMask layerMask;
     public Material test;
     [Range(0f,15f)] public float MoveSpeed = 12f;
+
+    // public Vector3 point(float scale, int pointNumber) => pointNumber != 0 ? new Vector3(0, scale/2, 0) : new Vector3(scale/2, 0, 0);
 
     private int winState = 0;
     private Queue<int> gameStates = new Queue<int>();
@@ -56,6 +61,8 @@ public class dynamicTable090 : Agent
     private RayPerceptionOutput.RayOutput[] rayOutputs; // RAY
     private RayPerceptionSensorComponent3D rayPerceptionSensor; // RAY
     private Transform pathFirstNode = null;
+    private int checkpointCount = 100;
+    private int lastCheckpoint = 0;
 
 
     void Awake()
@@ -64,10 +71,12 @@ public class dynamicTable090 : Agent
         if (pathfinder != null){AStar = pathfinder.GetComponent<AStar090>();}
         if(AStar.pathFinder){AStar.initPathFinder();}
 
-        for (int i = 0; i < mazesParent.transform.childCount; i++)
-        {
-            Transform childMaze = mazesParent.transform.GetChild(i);
-            mazes.Add(childMaze);
+        if(maze){
+            for (int i = 0; i < mazesParent.transform.childCount; i++)
+            {
+                Transform childMaze = mazesParent.transform.GetChild(i);
+                mazes.Add(childMaze);
+            }
         }
 
         rows = RowsNColumns;
@@ -109,12 +118,9 @@ public class dynamicTable090 : Agent
     void Update(){
         if(AStar.pathFinder && Vector3.Distance(AStar.lastPos,product.transform.localPosition)>1f){ 
             AStar.lastPos = product.transform.localPosition;
-            Transform nodeCheck = AStar.PathFinder(AStar.getPoint(product.transform), AStar.getPoint(target.transform));
-            if(nodeCheck != null){
-                pathFirstNode = nodeCheck;
-                AStar.changeMaterial(pathFirstNode, test);
-            }
-        }        
+            pathFirstNode = AStar.PathFinder(AStar.getPoint(product.transform), AStar.getPoint(target.transform));
+            if(pathFirstNode != null){AStar.changeMaterial(pathFirstNode, test);}
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -147,13 +153,16 @@ public class dynamicTable090 : Agent
             }
         }
         if(!productClass.triggered){
-            if(pathFirstNode != null){directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (gameObject.transform.InverseTransformPoint(pathFirstNode.position) - product.transform.localPosition).normalized);}
-            else{directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);}            
-            directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
+            if(pathFirstNode != null){
+                directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (gameObject.transform.InverseTransformPoint(pathFirstNode.position) - product.transform.localPosition).normalized);
+            }
+            else{
+                directionPoint = Vector3.Dot(productRigidbody.velocity.normalized, (target.transform.localPosition - product.transform.localPosition).normalized);
+            }
             float heightPoint = product.transform.localPosition.y;
             float closeness = targetCloseness();
             float speed = productRigidbody.velocity.magnitude;
-            if(directionPoint<0.6f && directionPoint>0 && !maze){directionPoint*=-1;}
+            if(directionPoint<0.65f && directionPoint>0){directionPoint*=-1;}
             if(speed < 0.1f){speed = 0.1f;}
             if(closeness<0.1){closeness = 0.1f;}
             float reward_increase = directionPoint * speed * 0.0002f;
@@ -173,9 +182,34 @@ public class dynamicTable090 : Agent
     
     public override void OnEpisodeBegin()
     {
-        if(selectedMaze!=null){Destroy(selectedMaze);}
-        if(mazeNumber >= 1 && mazeNumber <= 8){selectedMaze = Instantiate(mazes[mazeNumber-1].gameObject, mazeLocationSet, Quaternion.identity);}
-        else if(mazeNumber == 9){Instantiate(randomMaze, mazeLocationSet, Quaternion.identity);}
+        AStar.TestProperty = TEST;
+        
+        if(maze){
+            bool mazeChange = false;
+            if((CompletedEpisodes-lastCheckpoint)%checkpointCount == 0){
+                float winPercentage = CalculatePercentageOfOnes();
+                lastCheckpoint = CompletedEpisodes;
+                if(winPercentage >= lim){
+                    if(mazeNumber == 0 && lim == 98){checkpointCount=50;lim=95;mazeNumber++;mazeChange = true;}
+                    else if(mazeNumber == 0){checkpointCount=50;lim=98;}
+                    else if(mazeNumber<9){mazeNumber++;checkpointCount=100;mazeChange = true;}
+                    else if(mazeNumber == 9){checkpointCount=25;lim=99;}
+                    else{checkpointCount = 25;lim=98;mazeNumber = 9;mazeChange = true;}
+                }
+                else{
+                    if(checkpointCount>=100){
+                        checkpointCount = 25;
+                    }
+                    else{checkpointCount+=25;}
+                }
+            }
+
+            if(mazeChange){
+                if(selectedMaze != null){Destroy(selectedMaze);}
+                if(mazeNumber >= 1 && mazeNumber <= 8){selectedMaze = Instantiate(mazes[mazeNumber-1].gameObject, mazeLocationSet, Quaternion.identity);}
+                else if(mazeNumber == 9){selectedMaze = Instantiate(randomMaze, mazeLocationSet, Quaternion.identity);}
+            }
+        }
 
         gameStates.Enqueue(winState);
         if(gameStates.Count > 100){
@@ -185,7 +219,10 @@ public class dynamicTable090 : Agent
         recorder.Add("Custom/Win Percentage of Last 100 Episodes",CalculatePercentageOfOnes(),StatAggregationMethod.Average);
         recorder.Add("Custom/Completed Episodes",CompletedEpisodes,StatAggregationMethod.Average);
         recorder.Add("Custom/Avg Step",lastStep,StatAggregationMethod.Average);
-
+        if(maze){
+            recorder.Add("Custom/Maze Number",mazeNumber,StatAggregationMethod.Average);
+            recorder.Add("Custom/Checkpoints",lastCheckpoint,StatAggregationMethod.Average);
+        }
         product.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         productRigidbody.velocity = Vector3.zero;
         activeArray = new Transform[size*size-specifiedPoints.Count];
@@ -211,7 +248,7 @@ public class dynamicTable090 : Agent
     }     
 
     public void triggerReset(){
-        AddReward(-4f);
+        AddReward(-3f);
         EndEpisode();
     }
     
@@ -234,12 +271,13 @@ public class dynamicTable090 : Agent
                 sensor.AddObservation(0);
             }
         }
+        sensor.AddObservation(product.transform.localPosition);
+
         if(pathFirstNode != null){sensor.AddObservation(gameObject.transform.InverseTransformPoint(pathFirstNode.position));}
         else{sensor.AddObservation(target.transform.localPosition);}
         
 
         sensor.AddObservation(productRigidbody.velocity.magnitude);
-        sensor.AddObservation(directionPoint); // ?
         RayCollect(); // RAY
         sensor.AddObservation(observation); // RAY
     }
@@ -255,11 +293,11 @@ public class dynamicTable090 : Agent
             float rayHitDistance = rayOutputs[i].HitFraction * rayDirection.magnitude;
             observation.Add(rayHitDistance);
         }
-    }    
+    }
 
     private Vector3 randomPos(){
         return new Vector3(UnityEngine.Random.Range(wallBorders[0]-scale, wallBorders[1]+scale), UnityEngine.Random.Range(6f,7f), UnityEngine.Random.Range(wallBorders[2]-scale, wallBorders[3]+scale));
-    }     
+    }
 
     public void ObjectPos(){
         bool control = false;
@@ -275,7 +313,7 @@ public class dynamicTable090 : Agent
             do{
                 target_start = randomPos();
                 product_start = randomPos();
-            }while(Vector3.Distance(target_start, product_start) < 6f);
+            }while(Vector3.Distance(target_start, product_start) < 8f);
             target.transform.localPosition = target_start;
             product.transform.localPosition = product_start;
 
@@ -310,7 +348,18 @@ public class dynamicTable090 : Agent
                 Quaternion.Euler(0, 22.5f, 0) * new Vector3(1, 0, -1).normalized,
                 Quaternion.Euler(0, 22.5f, 0) * new Vector3(-1, 0, -1).normalized,
             };
-            
+            float offset = 0.2f;
+            Vector3[] positions = {
+                new Vector3(target.transform.position.x+offset, target.transform.position.y, target.transform.position.z),
+                new Vector3(target.transform.position.x-offset, target.transform.position.y, target.transform.position.z),
+                new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z+offset),
+                new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z-offset),
+                new Vector3(product.transform.position.x+offset, product.transform.position.y, product.transform.position.z),
+                new Vector3(product.transform.position.x-offset, product.transform.position.y, product.transform.position.z),
+                new Vector3(product.transform.position.x, product.transform.position.y, product.transform.position.z+offset),
+                new Vector3(product.transform.position.x, product.transform.position.y, product.transform.position.z-offset)              
+            };
+
             bool check = true;
             foreach (Vector3 direction in directions)
             {
@@ -325,7 +374,21 @@ public class dynamicTable090 : Agent
                     {
                         check = false;
                         break;
-                    }            
+                    }
+                }
+            }
+            if(check){
+                foreach (Vector3 position in positions.Take(8).ToArray()){
+                    foreach (Vector3 direction in directions.Take(8).ToArray()){
+                        RaycastHit hit;
+                        
+                        float rayL = 0.4f;
+                        if (Physics.Raycast(position, direction, out hit, rayL, layerMask))
+                        {
+                            check = false;
+                            break;
+                        }
+                    }
                 }
             }
             if(check){control = true;}
