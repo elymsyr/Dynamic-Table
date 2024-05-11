@@ -18,8 +18,9 @@ public class dynamicTable090 : Agent
 
     [Header("Maze")]
     [SerializeField] private bool maze = false;
-    [SerializeField] [Range(0,9)]private int mazeNumber = 0; // Default : 0 | Can be set for initialized trains.
-    private int lim = 85; // Also set this for initialized trains.
+    [SerializeField] [Range(0,9)]private int mazeNumber = 9; // Default : 0 | Can be set for initialized trains.
+    public int lim = 98; // Also set this for initialized trains.
+    public bool changeMaze = false;
     [SerializeField] private GameObject mazesParent;
     private Vector3 mazeLocationSet = new Vector3(158f,6f,1.25f);
     private List<Transform> mazes;
@@ -165,7 +166,7 @@ public class dynamicTable090 : Agent
             if(directionPoint<0.65f && directionPoint>0){directionPoint*=-1;}
             if(speed < 0.1f){speed = 0.1f;}
             if(closeness<0.1){closeness = 0.1f;}
-            float reward_increase = directionPoint * speed * 0.0002f;
+            float reward_increase = directionPoint * speed * speed * 0.0001f; // Changed for rereremaze (directionPoint * speed * 0.0002f)
             float reward_decrease = (float)Math.Pow(closeness, 0.1f);
             float reward = reward_increase / reward_decrease;
             if(directionPoint>=0){
@@ -186,25 +187,26 @@ public class dynamicTable090 : Agent
         
         if(maze){
             bool mazeChange = false;
-            if((CompletedEpisodes-lastCheckpoint)%checkpointCount == 0){
-                float winPercentage = CalculatePercentageOfOnes();
-                lastCheckpoint = CompletedEpisodes;
-                if(winPercentage >= lim){
-                    if(mazeNumber == 0 && lim == 98){checkpointCount=50;lim=95;mazeNumber++;mazeChange = true;}
-                    else if(mazeNumber == 0){checkpointCount=50;lim=98;}
-                    else if(mazeNumber<9){mazeNumber++;checkpointCount=100;mazeChange = true;}
-                    else if(mazeNumber == 9){checkpointCount=25;lim=99;}
-                    else{checkpointCount = 25;lim=98;mazeNumber = 9;mazeChange = true;}
-                }
-                else{
-                    if(checkpointCount>=100){
-                        checkpointCount = 25;
+            if(!changeMaze){
+                if((CompletedEpisodes-lastCheckpoint)%checkpointCount == 0){
+                    float winPercentage = CalculatePercentageOfOnes();
+                    lastCheckpoint = CompletedEpisodes;
+                    if(winPercentage >= lim){
+                        if(mazeNumber == 0 && lim == 99){checkpointCount=50;lim=95;mazeNumber++;mazeChange = true;gameStates.Clear();}
+                        else if(mazeNumber == 0){checkpointCount=50;lim=99;}
+                        else if(mazeNumber<9){mazeNumber++;checkpointCount=100;mazeChange = true;gameStates.Clear();}
+                        else if(mazeNumber == 9){checkpointCount=50;lim=99;mazeChange = true;gameStates.Clear();}
+                        else{checkpointCount = 25;lim=99;mazeNumber = 9;mazeChange = true;gameStates.Clear();}
                     }
-                    else{checkpointCount+=25;}
+                    else{
+                        if(checkpointCount>=100){
+                            checkpointCount = 25;
+                        }
+                        else{checkpointCount+=25;}
+                    }
                 }
             }
-
-            if(mazeChange){
+            if(mazeChange || changeMaze){ // changeMaze : Manual Change
                 if(selectedMaze != null){Destroy(selectedMaze);}
                 if(mazeNumber >= 1 && mazeNumber <= 8){selectedMaze = Instantiate(mazes[mazeNumber-1].gameObject, mazeLocationSet, Quaternion.identity);}
                 else if(mazeNumber == 9){selectedMaze = Instantiate(randomMaze, mazeLocationSet, Quaternion.identity);}
