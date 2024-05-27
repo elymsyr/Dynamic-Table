@@ -166,7 +166,7 @@ public class dynamicTable090 : Agent
             if(directionPoint<0.65f && directionPoint>0){directionPoint*=-1;}
             if(speed < 0.1f){speed = 0.1f;}
             if(closeness<0.1){closeness = 0.1f;}
-            float reward_increase = directionPoint * speed * speed * 0.0001f; // Changed for rereremaze (directionPoint * speed * 0.0002f)
+            float reward_increase = directionPoint * speed * speed * 0.0001f; // Change for rereremaze directionPoint  * speed * 0.0002f;
             float reward_decrease = (float)Math.Pow(closeness, 0.1f);
             float reward = reward_increase / reward_decrease;
             if(directionPoint>=0){
