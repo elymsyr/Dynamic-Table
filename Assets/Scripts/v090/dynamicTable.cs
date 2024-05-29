@@ -46,6 +46,7 @@ public class dynamicTable090 : Agent
     private float directionPoint = 0;
     private int rows = 22;
     private int columns = 22;
+    private int number_wins = 0; 
     private Transform[,] boxesArray;
     private Vector3[,] boxesLoc;
     private float[] wallBorders = {14.2f,-15.2f,14.2f,-15.2f};
@@ -256,6 +257,7 @@ public class dynamicTable090 : Agent
     
     public void winReset(){
         winState = 1;
+        number_wins++;
         AddReward(2f);
         EndEpisode();
     }
@@ -412,7 +414,7 @@ public class dynamicTable090 : Agent
 
     private void updateUI()
     {
-        ui.text = "Product States\nTarget Location: "+TargetLocation()+"\nAre we winning? "+CalculatePercentageOfOnes()+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nActive Parts Map: \n"+ActiveMap();
+        ui.text = "Product States\nTarget Location: "+TargetLocation()+"\nAre we winning? "+CalculatePercentageOfOnes()+"\nBoard Size: "+rows+"x"+columns+"\nDirection: "+directionPoint+"\nSpeed: "+productRigidbody.velocity.magnitude+"\nPosition: "+product.transform.localPosition+"\nHeighpoint: "+heighpoint+"\nDistance to Target: "+closeness+"\nReward: "+GetCumulativeReward()+"\nAction Count: "+StepCount+"\nGame Count: "+CompletedEpisodes+"\nWin Count: "+number_wins+"\nActive Parts Map: \n"+ActiveMap();
     }
 
     private string TargetLocation(){
